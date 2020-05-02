@@ -1,5 +1,5 @@
 import os
-from Core.core import Chat, Message
+from Core.core import Chat, Message, ChatSystem
 import vk
 import requests
 import time
@@ -28,7 +28,7 @@ class VK(Chat):
                             'vk',
                             id,
                             update,
-                            self
+                            self,
                         ).start()
         except KeyError:
             self.get_server()  # if error
@@ -43,7 +43,7 @@ class VK(Chat):
                                           v=self.api_version,
                                           random_id=rid,
                                           attachment=attachment)  # sending message
-            elif isinstance(text, types.GeneratorType):
+            elif isinstance(text, GeneratorType):
                 a = True
                 for msg in text:
                     if a:
@@ -56,10 +56,8 @@ class VK(Chat):
                     else:
                         self.vk_api.messages.edit(peer_id=id, message=msg, v=self.api_version, message_id=outid, attachment=attachment)
 
-    def __init__(self, token, _group_id, v, modules):
-        super().__init__(modules, 'vk')
-        # session = vk.AuthSession('id', 'num', 'pass', scope='groups')  # user session
-        # self.vk_api_user = vk.API(session, v=5.95)  # user api(for ban and may be smth)w
+    def __init__(self, token, _group_id, v, main_system: ChatSystem):
+        super().__init__(main_system)
         self.group_id = _group_id  # for group bots
         self.api_version = v  # api
         self.vk_api = vk.API(vk.Session(access_token=token))  # setting vk api
@@ -131,12 +129,14 @@ class VK(Chat):
                 r_attachments['sound'].append((attachment['audio']['url'], 'mp3'))
             elif attachment['type'] == 'audio_message':
                 r_attachments['sound'].append((attachment['audio_message']['link_mp3'], 'mp3'))
-        if r_sendid in self.ACTIVE_COMMANDS.keys():  # if active command
+        dbs = self.main_system.db_session
+        session = dbs.create_session()
+        if set := session.query(dbs.Settings).filter((dbs.Settings.user_id == r_sendid) & (dbs.Settings.name == "active")).first():
             if r_msg.find('end') != -1:  # exit from active commands
-                if r_msg[:r_msg.find('end')] in self.COMMAND_SYMBOL:
-                    del self.ACTIVE_COMMANDS[r_sendid]
+                if r_msg[:r_msg.find('end')] in self.main_system.defaut_command_symbols:
+                    set.delete()
             else:
-                r_msg = self.ACTIVE_COMMANDS[r_sendid] + ' ' + r_msg
+                r_msg = set.value + ' ' + r_msg
         for i in self.find_id.finditer(r_msg):  # for @links
             r_msg = r_msg[:i.start():] + i.group(1) + r_msg[i.end()::]
         return {'msg': r_msg,
@@ -145,9 +145,6 @@ class VK(Chat):
                 'type': r_ctype,
                 'attachments': r_attachments,
                 'userid': r_userid}
-
-    def ban(self, id, time=time.time() + 3900, reason=0, comment='Just 4 u!', comment_visible=1):
-        self.vk_api_user.groups.ban(group_id=self.group_id, owner_id=id, end_date=time, reason=reason, comment=comment, comment_visible=comment_visible)
 
     def upload_doc(self, dir, from_id, type: 'audio_message' or 'doc'):
         pfile = requests.post(

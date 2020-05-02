@@ -15,7 +15,8 @@ def dothis(message):
     return mreturn
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, *args):
+def main():
+    return "help", "help", dothis, '!help {command/page}\nВыводит информацию о команде', 0, None, None, None
     ACTIVATES.update({'help': {'help'}})
     name = 'help'
     currenthelp = '!help {command/page}\nВыводит информацию о команде'

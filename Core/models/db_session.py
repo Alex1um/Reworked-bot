@@ -1,35 +1,75 @@
-import sqlalchemy as sa
+import sqlalchemy
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
 
-SqlAlchemyBase = dec.declarative_base()
 
-__factory = None
+class DataBaseSession:
+    __factory = None
+
+    def __init__(self, db_file):
+        self.SqlAlchemyBase = dec.declarative_base()
+
+        if not db_file or not db_file.strip():
+            raise Exception("Необходимо указать файл базы данных.")
+
+        conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
+
+        print(f"Подключение к базе данных по адресу {conn_str}")
+
+        class User(self.SqlAlchemyBase):
+            __tablename__ = 'users'
+
+            id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+            type = sqlalchemy.Column(sqlalchemy.String)
+            level = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+
+            def __init__(self, id, type, permission_level):
+                self.id = id
+                self.type = type
+                self.permission_level = permission_level
+
+        class CommandTable(self.SqlAlchemyBase):
+            __tablename__ = 'commands'
+
+            # id = sqlalchemy.Column(sqlalchemy.Integer,
+            #                        autoincrement=True,
+            #                        primary_key=True)
+            name = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
+            activates = sqlalchemy.Column(sqlalchemy.String)
+            level = sqlalchemy.Column(sqlalchemy.Integer)
+            command_symbol = sqlalchemy.Column(sqlalchemy.String)
+            help = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+            def __init__(self, name, activates, help, permission_level, sym):
+                self.name = name
+                self.activates = activates
+                self.permission_level = permission_level
+                self.command_symbol = sym
+
+        class Settings(self.SqlAlchemyBase):
+            __tablename__ = 'settings'
+
+            set_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                       autoincrement=True,
+                                       primary_key=True)
+            user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                        sqlalchemy.ForeignKey('users.id'))
+            name = sqlalchemy.Column(sqlalchemy.String)
+            value = sqlalchemy.Column(sqlalchemy.String)
 
 
-def global_init(db_file):
-    global __factory
+        self.User = User
+        self.Settings = Settings
+        self.CommandTable = CommandTable
 
-    if __factory:
-        return
+        self.engine = sqlalchemy.create_engine(conn_str, echo=False)
+        self.__factory = orm.sessionmaker(bind=self.engine)
 
-    if not db_file or not db_file.strip():
-        raise Exception("Необходимо указать файл базы данных.")
-
-    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
-    print(f"Подключение к базе данных по адресу {conn_str}")
-
-    from . import __all_models
-
-    engine = sa.create_engine(conn_str, echo=False)
-    __factory = orm.sessionmaker(bind=engine)
+        self.SqlAlchemyBase.metadata.create_all(self.engine)
 
 
-    SqlAlchemyBase.metadata.create_all(engine)
 
-
-def create_session() -> Session:
-    global __factory
-    return __factory()
+    def create_session(self) -> Session:
+        return self.__factory()
 
