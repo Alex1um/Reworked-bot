@@ -25,13 +25,11 @@ class ChatSystem:
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
         if db_file is None:
-            db_file = f"Core\\db\\db-{ChatSystem.system_id}.sqlite"
+            db_file = f"\\Core\\db\\db-{ChatSystem.system_id}.sqlite"
         exists = os.path.exists(db_file)
         self.db_session = db_session.DataBaseSession(db_file)
         self.load_modules(modules, not exists)
         self.reload()
-        print(self.ACTIVE_ACTIONS)
-        print(self.module_news)
 
     def reload(self):
         for action in self.ON_LOAD:
