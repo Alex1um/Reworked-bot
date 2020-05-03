@@ -174,10 +174,7 @@ class Message(Thread):
         self.sendid = parsed['sendid']
         self.userid = parsed['userid']
         self.user = session.query(system.db_session.User).get(self.userid)
-        if self.user is None:
-            self.user = system.db_session.User(self.userid, 'vk', 0)
-            session.add(self.user)
-            session.commit()
+
         self.sym = system.get_command_symbol(self.msg)
         self.command = system.getcommand(
             self.msg[
@@ -196,6 +193,17 @@ class Message(Thread):
     def run(self):
         system = self.cls.main_system
         session = system.db_session.create_session()
+        if self.user is None:
+            self.user = system.db_session.User(self.userid, 'vk', 0)
+            session.add(self.user)
+            session.commit()
+            self.send(
+                "Добро пожаловать!" 
+                " напишит"
+                "е" + self.cls.main_system.defaut_command_symbols[0] + "help дл"
+                                                                       "я получ"
+                                                                       "ения по"
+                                                                       "мощи")
         if self.command:
             ans = system.ACTIVE_ACTIONS[
                 self.command.name](
