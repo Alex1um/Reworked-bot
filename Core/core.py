@@ -26,9 +26,12 @@ class ChatSystem:
         ChatSystem.system_id += 1
         if db_file is None:
             db_file = f"Core\\db\\db-{ChatSystem.system_id}.sqlite"
+        exists = os.path.exists(db_file)
         self.db_session = db_session.DataBaseSession(db_file)
-        self.load_modules(modules, not os.path.exists(db_file))
+        self.load_modules(modules, not exists)
         self.reload()
+        print(self.ACTIVE_ACTIONS)
+        print(self.module_news)
 
     def reload(self):
         for action in self.ON_LOAD:
@@ -69,8 +72,8 @@ class ChatSystem:
                     if __onloadf:
                         self.ON_LOAD.append(__onloadf)
 
-            session.commit()
-            os.chdir(currentdir)
+        session.commit()
+        os.chdir(currentdir)
 
     def exit(self):
         for command in self.EXITS:
