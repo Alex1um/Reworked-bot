@@ -200,10 +200,11 @@ class Message(Thread):
             self.send(
                 "Добро пожаловать!" 
                 " напишит"
-                "е" + self.cls.main_system.defaut_command_symbols[0] + "help дл"
-                                                                       "я получ"
-                                                                       "ения по"
-                                                                       "мощи")
+                "е " + self.cls.main_system.defaut_command_symbols[0] + "help д"
+                                                                        "ля пол"
+                                                                        "учения"
+                                                                        " пом"
+                                                                        "ощи")
         if self.command:
             ans = system.ACTIVE_ACTIONS[
                 self.command.name](
