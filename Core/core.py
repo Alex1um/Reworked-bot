@@ -21,8 +21,10 @@ class ChatSystem:
 
     def __init__(self, modules: Dict[str, str], db_file=None):
         self.system_id = ChatSystem.system_id
-        self.db_session = db_session.DataBaseSession(db_file if db_file else f"Core\\db\\db-{ChatSystem.system_id}.sqlite")
         ChatSystem.system_id += 1
+        if db_file is None:
+            db_file = f"Core\\db\\db-{ChatSystem.system_id}.sqlite"
+        self.db_session = db_session.DataBaseSession(db_file)
         self.load_modules(modules)
 
     def reload_modules(self, dirs):
@@ -48,16 +50,21 @@ class ChatSystem:
                         i = i[:-3]
                     print(dir, i)
                     exec(f'from {dir} import {i}')
-                    __name, __activates, __action, __help, __level, __passive, __exitf, __symbol = eval(f'{i}.main()')
+                    _cmd, _additional, _setts = eval(f'{i}.main()')
+                    __passive, __exitf = _additional if _additional else (None, None)
                     exec(f'del {i}')
-                    if __symbol is None:
-                        __symbol = symbols[0]
-                    session.add(self.db_session.CommandTable(__name, __activates, __help, __level, __symbol))
-                    self.ACTIVE_ACTIONS[__name] = __action
+                    if len(_cmd) >= 5 and not all(map(lambda x: x is None, _cmd[:4])):
+                        __name, __activates, __action, __help, __level, __symbol = _cmd
+                        if __symbol is None:
+                            __symbol = symbols[0]
+                        session.add(self.db_session.CommandTable(__name, __activates, __help, __level, __symbol))
+                        self.ACTIVE_ACTIONS[__name] = __action
                     if __passive:
                         self.PASSIVE_ACTIONS.append(__passive)
                     if __exitf:
                         self.EXITS.append(__exitf)
+                    if _setts:
+                        self.SETTINGS.update(_setts)
 
             session.commit()
             os.chdir(currentdir)
@@ -77,8 +84,9 @@ class ChatSystem:
 
     def getcommand(self, value):
         session = self.db_session.create_session()
-        if k := session.query(self.db_session.CommandTable).filter(self.db_session.CommandTable.activates.ilike(value)).first():
-            return k.name
+        k = session.query(self.db_session.CommandTable).filter(self.db_session.CommandTable.activates.contains(value)).first()
+        if k:
+            return k
         return None
 
     def get_command_symbol(self, text):
@@ -149,7 +157,7 @@ class Message(Thread):
     sym = ''
 
     def __init__(self, _type, id, text, cls: Chat):
-        system = cls.main_system
+        system: ChatSystem = cls.main_system
         session = system.db_session.create_session()
         Thread.__init__(self)
         parsed = cls.message_parse(text)
@@ -165,8 +173,8 @@ class Message(Thread):
             session.add(self.user)
             session.commit()
         self.sym = system.get_command_symbol(self.msg)
-        self.command = system.getcommand(self.msg[len(self.sym):self.msg.find(' ') if self.msg.find(' ') != -1 else None], cls) if self.sym is not None else None
-        self.cls = cls
+        self.command = system.getcommand(self.msg[len(self.sym):self.msg.find(' ') if self.msg.find(' ') != -1 else None]) if self.sym is not None else None
+        self.cls: Chat = cls
         self.text = self.msg[self.msg.find(' ') + 1:]
         self.msg_id = id
         self.params = self.msg.split()[1::]

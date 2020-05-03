@@ -33,7 +33,8 @@ def dothis(message):
             break
         if not tags or (item[1] in tags or any(map(lambda x: x in item_lower, tags))):
             n -= 1
-            if (le1 := len(item[0])) + le > 4096:
+            le1 = len(item[0])
+            if le1 + le > 4096:
                 return ans
             else:
                 ans += item[0]
@@ -48,10 +49,5 @@ def update_news(message):
     print('Updated!')
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, passive, *args):
-    ACTIVATES.update({'get_news': {'news'}})
-    name = 'get_news'
-    currenthelp = '!news\nСвежие новости'
-    stt = Command(name, currenthelp, dothis, 0)
-    GLOBAL_COMMANDS[name] = stt
-    passive[name] = update_news
+def main():
+    return ("get_news", "news", dothis, '!news\nСвежие новости', 0, None), None, None

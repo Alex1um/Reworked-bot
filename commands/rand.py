@@ -1,4 +1,4 @@
-from Core.core import *
+from Core.core import ChatSystem
 import random
 
 
@@ -25,9 +25,5 @@ def dothis(message):
         return str(situations[mode](min(a, b), max(b, a)))
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, *args):
-    ACTIVATES.update({'random': {'random', 'r'}})
-    name = 'random'
-    currenthelp = '!random / !r {int|float|coin|array|shuffle|random} {value} {value} | values...'
-    rand = Command(name, currenthelp, dothis, 0)
-    GLOBAL_COMMANDS[name] = rand
+def main():
+    return ("random", 'r random', dothis, '!random / !r {int|float|coin|array|shuffle|random} {value} {value} | values...', 0, None), None, None

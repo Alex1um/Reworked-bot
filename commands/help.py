@@ -1,24 +1,20 @@
-from Core.core import *
+from Core.core import ChatSystem
 
 
 def dothis(message):
-    COMMANDS = message.cls.GLOBAL_COMMANDS
+    system: ChatSystem = message.cls.main_system
+    session = system.db_session.create_session()
     params = message.msg.split()
     if len(params) > 1:
-        if params[1] in COMMANDS.keys():
-            mreturn = Command.help[params[1]]
+        cmd = system.getcommand(params[1])
+        if cmd:
+            mreturn = cmd.help
         else:
             mreturn = 'No command'
     else:
-        mreturn = '\n'.join(''.join(i) for i in list(
-            zip(map(lambda x: f'{x} - !', range(len(COMMANDS))), COMMANDS.keys())))
+        mreturn = '\n'.join(map(lambda x: f"{x[0]} - {x[1].name}", enumerate(session.query(system.db_session.CommandTable))))
     return mreturn
 
 
 def main():
-    return "help", "help", dothis, '!help {command/page}\nВыводит информацию о команде', 0, None, None, None
-    ACTIVATES.update({'help': {'help'}})
-    name = 'help'
-    currenthelp = '!help {command/page}\nВыводит информацию о команде'
-    help = Command(name, currenthelp, dothis, 0)
-    GLOBAL_COMMANDS[name] = help
+    return ("help", "help", dothis, '!help {command/page}\nВыводит информацию о команде', 0, None), None, None

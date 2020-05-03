@@ -17,6 +17,4 @@ def permissions(self, message, length):
 
 
 def main(*args):
-    args[3].update({'permissions': {
-                'get': (permissions, 0),
-                'set': (permissions, 8)}})
+    return {'permissions': {'get': (permissions, 0), 'set': (permissions, 8)}}

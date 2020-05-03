@@ -44,8 +44,9 @@ class DataBaseSession:
             def __init__(self, name, activates, help, permission_level, sym):
                 self.name = name
                 self.activates = activates
-                self.permission_level = permission_level
+                self.level = permission_level
                 self.command_symbol = sym
+                self.help = help
 
         class Settings(self.SqlAlchemyBase):
             __tablename__ = 'settings'
