@@ -131,7 +131,8 @@ class VK(Chat):
                 r_attachments['sound'].append((attachment['audio_message']['link_mp3'], 'mp3'))
         dbs = self.main_system.db_session
         session = dbs.create_session()
-        if set := session.query(dbs.Settings).filter((dbs.Settings.user_id == r_sendid) & (dbs.Settings.name == "active")).first():
+        set = session.query(dbs.Settings).filter((dbs.Settings.user_id == r_sendid) & (dbs.Settings.name == "active")).first()
+        if set:
             if r_msg.find('end') != -1:  # exit from active commands
                 if r_msg[:r_msg.find('end')] in self.main_system.defaut_command_symbols:
                     set.delete()

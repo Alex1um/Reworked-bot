@@ -4,6 +4,7 @@ from commands.site_parsers.news import *
 
 
 # init
+# getting news from yandex and triberkomo
 __news = set()
 apply_news(__news)
 print(__news)
@@ -11,14 +12,6 @@ print(__news)
 
 
 def dothis(message):
-    '''
-    Function to getting target news from triberkomo
-    todo: need to updating sites with other thread(with schedule)
-    todo: need to find from other sites
-    todo: need to news system(dict)
-    :param message:
-    :return:
-    '''
     tags = set(message.params)
     n = 1
     if message.params:

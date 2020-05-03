@@ -104,13 +104,8 @@ def update_table(message):
             pickle.dump(w_table, f)
 
 
-def main(activates: dict, global_commands: dict, passive: list, global_settings: dict):
-    activates.update({'random_talk': {'talk'}})
-    name = 'random_talk'
-    currenthelp = '!talk\nРандомная фраза'
-    random_talk = Command(name, currenthelp, dothis, 0, exit)
-    global_commands[name] = random_talk
-    global_settings.update({
+def main():
+    setts = {
         'random_talks': {
             'table': {  # for table
                 'add': (table_file, 5),
@@ -127,5 +122,4 @@ def main(activates: dict, global_commands: dict, passive: list, global_settings:
                 'no': (partial(enable_record, False), 0),
                 'False': (partial(enable_record, False), 0),
                 'current': (partial(enable_record, None), 0)}}}
-    )
-    passive[name] = update_table
+    return ("random_talk", "talk", dothis, '!talk\nРандомная фраза', 0, None), (update_table, None), setts
