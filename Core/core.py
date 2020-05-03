@@ -18,28 +18,23 @@ class ChatSystem:
     PASSIVE_ACTIONS = list()
     SETTINGS = dict()
     EXITS = list()
+    ON_LOAD = list()
 
-    def __init__(self, modules: Dict[str, str], db_file=None):
+    def __init__(self, modules: Dict[str, str], db_file=None, default_command_symbols=("!", "test>")):
+        self.defaut_command_symbols = default_command_symbols
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
         if db_file is None:
             db_file = f"Core\\db\\db-{ChatSystem.system_id}.sqlite"
-        exist = False
-        if os._exists(db_file):
-            exist = True
         self.db_session = db_session.DataBaseSession(db_file)
-        if not exist:
-            self.load_modules(modules)
+        self.load_modules(modules, not os.path.exists(db_file))
+        self.reload()
 
-    def reload_modules(self, dirs):
-        #todo wirte me
-        pass
+    def reload(self):
+        for action in self.ON_LOAD:
+            action(self)
 
-    def load_modules(self, dirs={'commands': '@all'}, default_command_symbols=('!', 'abs')):
-        self.defaut_command_symbols = default_command_symbols
-        self.get_modules(dirs, default_command_symbols)
-
-    def get_modules(self, dirs, symbols):
+    def load_modules(self, dirs, init=True):
         session = self.db_session.create_session()
         currentdir = os.path.abspath(os.curdir)
         for dir in dirs.keys():
@@ -55,21 +50,24 @@ class ChatSystem:
                     print(dir, i)
                     exec(f'from {dir} import {i}')
                     _cmd, _additional, _setts = eval(f'{i}.main()')
-                    __passive, __exitf = _additional if _additional else (None, None)
+                    __passivef, __exitf, __onloadf = _additional if _additional else (None, None, None)
                     exec(f'del {i}')
                     if len(_cmd) >= 5 and not all(map(lambda x: x is None, _cmd[:4])):
                         __name, __activates, __action, __help, __level, __symbol = _cmd
                         __activates = " " + __activates.strip() + " "
                         if __symbol is None:
-                            __symbol = symbols[0]
-                        session.add(self.db_session.CommandTable(__name, __activates, __help, __level, __symbol))
+                            __symbol = self.defaut_command_symbols[0]
+                        if init:
+                            session.add(self.db_session.CommandTable(__name, __activates, __help, __level, __symbol))
                         self.ACTIVE_ACTIONS[__name] = __action
-                    if __passive:
-                        self.PASSIVE_ACTIONS.append(__passive)
+                    if __passivef:
+                        self.PASSIVE_ACTIONS.append(__passivef)
                     if __exitf:
                         self.EXITS.append(__exitf)
                     if _setts:
                         self.SETTINGS.update(_setts)
+                    if __onloadf:
+                        self.ON_LOAD.append(__onloadf)
 
             session.commit()
             os.chdir(currentdir)
@@ -81,7 +79,7 @@ class ChatSystem:
             except Exception as f:
                 pass
 
-    def save_settings(self, wtype):
+    def save_settings(self):
         self.db_session.create_session().commit()
 
     def invoke_command(self, message, command_name: str) -> str and list:
@@ -126,6 +124,7 @@ class Chat(Thread):
 
     def message_parse(self):
         pass
+
 
 class Settings:
     random_talks_file = 'Trash'

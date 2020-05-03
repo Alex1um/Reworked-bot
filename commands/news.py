@@ -5,13 +5,14 @@ from commands.site_parsers.news import *
 
 # init
 # getting news from yandex and triberkomo
-__news = set()
-apply_news(__news)
-print(__news)
+def update_news(system: ChatSystem):
+    system.module_news = set()
+    apply_news(system.module_news)
 # init
 
 
 def dothis(message):
+    system = message.cls.main_system
     tags = set(message.params)
     n = 1
     if message.params:
@@ -20,7 +21,7 @@ def dothis(message):
     le = 0
     ans = ''
     i = 0
-    for item in __news:
+    for item in system.__news:
         item_lower = item[0].lower()
         if n == 0:
             break
@@ -38,9 +39,5 @@ def dothis(message):
     return ans
 
 
-def update_news(message):
-    print('Updated!')
-
-
 def main():
-    return ("get_news", "news", dothis, '!news {необязательно: тема}\nПолучить свежие новости по теме или без', 0, None), None, None
+    return ("get_news", "news", dothis, '!news {необязательно: тема}\nПолучить свежие новости по теме или без', 0, None), (None, None, update_news), None

@@ -20,5 +20,5 @@ def permissions(params, system: ChatSystem, message):
     return 'id not found'
 
 
-def main(*args):
-    return {'permissions': {'get': (permissions, 0), 'set': (permissions, 8)}}
+def main():
+    return None, None, {'permissions': {'get': (permissions, 0), 'set': (permissions, 8)}}

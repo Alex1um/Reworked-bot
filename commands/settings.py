@@ -34,4 +34,4 @@ def exitf(chat_system: ChatSystem):
 
 
 def main():
-    return ("settings", "set settings", dothis, '{!set|!settings} {module} {setting} {parameter} {name}\nНастройки', 0, None), (None, exitf), None
+    return ("settings", "set settings", dothis, '{!set|!settings} {module} {setting} {parameter} {name}\nНастройки', 0, None), (None, exitf, None), None
