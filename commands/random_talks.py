@@ -1,4 +1,5 @@
-from Core.core import *
+from Core.core import ChatSystem
+import glob
 import random
 import pickle
 import re

@@ -17,4 +17,4 @@ def dothis(message):
 
 
 def main():
-    return ("help", "help", dothis, '!help {command/page}\nВыводит информацию о команде', 0, None), None, None
+    return ("help", "help", dothis, '!help {Название команды}\nПолучить помощь по команде', 0, None), None, None

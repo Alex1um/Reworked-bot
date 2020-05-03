@@ -1,17 +1,21 @@
-def permissions(self, message, length):
+from Core.core import ChatSystem
+
+
+def permissions(params, system: ChatSystem, message):
     try:
-        uid = message.params[length]
-        ulevel = message.params[length + 1]
+        uid = params[0]
+        ulevel = params[1]
     except IndexError:
         uid = None
         ulevel = None
     otherid, level = int(uid) if uid != 'self' and uid.isdigit() else message.userid, int(
         ulevel) if ulevel.isdigit() else None
-    if otherid in message.cls.SETTINGS.keys():
+    other = system.db_session.create_session().query(system.db_session.User).get(otherid)
+    if other:
         if level is None:
-            return message.cls.SETTINGS[otherid].level
+            return other.level
         else:
-            message.cls.SETTINGS[otherid].level = level
+            other.level = level
             return 'Success'
     return 'id not found'
 

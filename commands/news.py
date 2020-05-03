@@ -43,4 +43,4 @@ def update_news(message):
 
 
 def main():
-    return ("get_news", "news", dothis, '!news\nСвежие новости', 0, None), None, None
+    return ("get_news", "news", dothis, '!news {необязательно: тема}\nПолучить свежие новости по теме или без', 0, None), None, None

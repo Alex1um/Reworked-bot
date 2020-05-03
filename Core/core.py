@@ -24,8 +24,12 @@ class ChatSystem:
         ChatSystem.system_id += 1
         if db_file is None:
             db_file = f"Core\\db\\db-{ChatSystem.system_id}.sqlite"
+        exist = False
+        if os._exists(db_file):
+            exist = True
         self.db_session = db_session.DataBaseSession(db_file)
-        self.load_modules(modules)
+        if not exist:
+            self.load_modules(modules)
 
     def reload_modules(self, dirs):
         #todo wirte me
@@ -55,6 +59,7 @@ class ChatSystem:
                     exec(f'del {i}')
                     if len(_cmd) >= 5 and not all(map(lambda x: x is None, _cmd[:4])):
                         __name, __activates, __action, __help, __level, __symbol = _cmd
+                        __activates = " " + __activates.strip() + " "
                         if __symbol is None:
                             __symbol = symbols[0]
                         session.add(self.db_session.CommandTable(__name, __activates, __help, __level, __symbol))
@@ -84,7 +89,8 @@ class ChatSystem:
 
     def getcommand(self, value):
         session = self.db_session.create_session()
-        k = session.query(self.db_session.CommandTable).filter(self.db_session.CommandTable.activates.contains(value)).first()
+        v = " " + value + " "
+        k = session.query(self.db_session.CommandTable).filter(self.db_session.CommandTable.activates.contains(v)).first()
         if k:
             return k
         return None
@@ -210,3 +216,4 @@ class Message(Thread):
                     self.send(i)
             else:
                 self.cls.send(msg, self.sendid, self.msg_id)
+        self.cls.main_system.save_settings()

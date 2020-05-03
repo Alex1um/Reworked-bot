@@ -26,4 +26,11 @@ def dothis(message):
 
 
 def main():
-    return ("random", 'r random', dothis, '!random / !r {int|float|coin|array|shuffle|random} {value} {value} | values...', 0, None), None, None
+    help_msg = """!random | !r {int|float|coin|array|shuffle|random} {value} {value} | values...
+    int - случайное целое число в заданном диапазоне(от 0 до 100 по умолчанию)
+    float - случайное дробное число в заданном диапазоне(от 0 до 100 по умолчанию)
+    coin - бросить монетку
+    array - выбрать случайный член из заданного через пробел списка
+    shuffle - перемешать заданный через пробел список
+    random - случайное число от 0 до 1"""
+    return ("random", 'r random', dothis, help_msg, 0, None), None, None
