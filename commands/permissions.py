@@ -21,4 +21,5 @@ def permissions(params, system: ChatSystem, message):
 
 
 def main():
-    return None, None, {'permissions': {'get': (permissions, 0), 'set': (permissions, 8)}}
+    return None, None, {
+        'permissions': {'get': (permissions, 0), 'set': (permissions, 8)}}

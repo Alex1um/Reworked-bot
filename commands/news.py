@@ -25,7 +25,8 @@ def dothis(message):
         item_lower = item[0].lower()
         if n == 0:
             break
-        if not tags or (item[1] in tags or any(map(lambda x: x in item_lower, tags))):
+        if not tags or (item[1] in tags or any(
+                map(lambda x: x in item_lower, tags))):
             n -= 1
             le1 = len(item[0])
             if le1 + le > 4096:

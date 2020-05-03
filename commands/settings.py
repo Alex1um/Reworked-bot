@@ -5,7 +5,9 @@ def dothis(message):
     try:
         system: ChatSystem = message.cls.main_system
         session = system.db_session.create_session()
-        status = session.query(system.db_session.Settings).filter((system.db_session.Settings.user_id == message.userid) & (system.db_session.Settings.name == "active")).first()
+        status = session.query(system.db_session.Settings).filter(
+            (system.db_session.Settings.user_id == message.userid) & (
+                    system.db_session.Settings.name == "active")).first()
         current_set = system.SETTINGS
         new_bar = ""
         if status:
@@ -34,4 +36,8 @@ def exitf(chat_system: ChatSystem):
 
 
 def main():
-    return ("settings", "set settings", dothis, '{!set|!settings} {module} {setting} {parameter} {name}\nНастройки', 0, None), (None, exitf, None), None
+    return ("settings",
+            "set settings",
+            dothis,
+            '{!set|!settings} {module} {setting} {parameter} {name}\nНастройки',
+            0, None), (None, exitf, None), None

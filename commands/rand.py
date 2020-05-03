@@ -21,7 +21,8 @@ def dothis(message):
     if mode in array_calls:
         return str(situations[mode](p[1::]))
     else:
-        a, b = int(p[1]) if len(p) > 1 else 0, int(p[2]) if len(p) > 2 else 0 if len(p) == 2 else 100
+        a = int(p[1]) if len(p) > 1 else 0
+        b = int(p[2]) if len(p) > 2 else 0 if len(p) == 2 else 100
         return str(situations[mode](min(a, b), max(b, a)))
 
 

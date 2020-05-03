@@ -12,7 +12,10 @@ def dothis(message):
         else:
             mreturn = 'No command'
     else:
-        mreturn = '\n'.join(map(lambda x: f"{x[0]} - {x[1].name}", enumerate(session.query(system.db_session.CommandTable))))
+        mreturn = '\n'.join(
+            map(
+                lambda x: f"{x[0]} - {x[1].name}", enumerate(
+                    session.query(system.db_session.CommandTable))))
     return mreturn
 
 
