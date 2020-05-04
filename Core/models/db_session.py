@@ -37,16 +37,25 @@ class DataBaseSession:
             #                        primary_key=True)
             name = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
             activates = sqlalchemy.Column(sqlalchemy.String)
-            level = sqlalchemy.Column(sqlalchemy.Integer)
-            command_symbol = sqlalchemy.Column(sqlalchemy.String)
+            level = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+            command_symbol = sqlalchemy.Column(sqlalchemy.String, default='!')
             help = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+            short_help = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-            def __init__(self, name, activates, help, permission_level, sym):
+            def __init__(self,
+                         name,
+                         activates,
+                         help=None,
+                         permission_level=0,
+                         sym=None,
+                         short_help=None,
+                         default_sym="!"):
                 self.name = name
                 self.activates = activates
                 self.level = permission_level
-                self.command_symbol = sym
+                self.command_symbol = sym if sym else default_sym
                 self.help = help
+                self.short_help = short_help
 
         class Settings(self.SqlAlchemyBase):
             __tablename__ = 'settings'

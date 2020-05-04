@@ -55,19 +55,16 @@ class ChatSystem:
                     else:
                         __passivef, __exitf, __onloadf = None, None, None
                     exec(f'del {i}')
-                    if len(_cmd) >= 5 and not all(
-                            map(lambda x: x is None, _cmd[:4])):
-                        __name, __activates, __action, __help, __level, __symbol = _cmd
+                    if len(_cmd) >= 3 and not all(
+                            map(lambda x: x is None, _cmd[:3])):
+                        __name, __activates, __action = _cmd[:3]
                         __activates = " " + __activates.strip() + " "
-                        if __symbol is None:
-                            __symbol = self.defaut_command_symbols[0]
                         if init:
                             session.add(self.db_session.CommandTable(
                                 __name,
                                 __activates,
-                                __help,
-                                __level,
-                                __symbol))
+                                *_cmd[3:],
+                                default_sym=self.defaut_command_symbols[0]))
                         self.ACTIVE_ACTIONS[__name] = __action
                     if __passivef:
                         self.PASSIVE_ACTIONS.append(__passivef)

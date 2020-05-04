@@ -6,7 +6,14 @@ def dothis(message):
     session = system.db_session.create_session()
     params = message.msg.split()
     if len(params) > 1:
-        cmd = system.getcommand(params[1])
+        if params[1].isdigit():
+            index = int(params[1])
+            cmd = next(
+                filter(
+                    lambda x: x[0] == index, enumerate(
+                        session.query(system.db_session.CommandTable))))[1]
+        else:
+            cmd = system.getcommand(params[1])
         if cmd:
             mreturn = cmd.help
         else:
@@ -14,8 +21,9 @@ def dothis(message):
     else:
         mreturn = '\n'.join(
             map(
-                lambda x: f"{x[0]} - {x[1].name}", enumerate(
-                    session.query(system.db_session.CommandTable))))
+                lambda x: f"{x[0]} - {x[1].name}" + (
+                    (" - " + x[1].short_help) if x[1].short_help else ""),
+                enumerate(session.query(system.db_session.CommandTable))))
     return mreturn
 
 
@@ -25,6 +33,7 @@ def main():
             dothis,  # callable function
             '!help {Название команды}\nПолучить помощь по команде',  # help
             0,  # permission level
-            None  # special symbol
+            None,  # special symbol
+            "Помощь по командам"  # short help
             ), None, None  # additional functions and settings
 
