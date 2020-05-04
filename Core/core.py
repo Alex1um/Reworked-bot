@@ -55,7 +55,7 @@ class ChatSystem:
                     else:
                         __passivef, __exitf, __onloadf = None, None, None
                     exec(f'del {i}')
-                    if len(_cmd) >= 3 and not all(
+                    if _cmd and len(_cmd) >= 3 and not all(
                             map(lambda x: x is None, _cmd[:3])):
                         __name, __activates, __action = _cmd[:3]
                         __activates = " " + __activates.strip() + " "

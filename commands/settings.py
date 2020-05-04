@@ -39,5 +39,7 @@ def main():
     return ("settings",
             "set settings",
             dothis,
-            '{!set|!settings} {module} {setting} {parameter} {name}\nНастройки',
-            0, None), (None, exitf, None), None
+            'set | settings {module} {setting} {parameter} {name}\nНастройки',
+            0,
+            None,
+            "Настройки"), (None, exitf, None), None

@@ -34,4 +34,10 @@ def main():
     array - выбрать случайный член из заданного через пробел списка
     shuffle - перемешать заданный через пробел список
     random - случайное число от 0 до 1"""
-    return ("random", 'r random', dothis, help_msg, 0, None), None, None
+    return ("random",
+            'r random',
+            dothis,
+            help_msg,
+            0,
+            None,
+            "Рвзличный рандом"), None, None
