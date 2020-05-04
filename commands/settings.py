@@ -9,6 +9,9 @@ def dothis(message):
         (system.db_session.Settings.user_id == message.userid) & (
                 system.db_session.Settings.name == "settings")).first()
     current_set = system.SETTINGS
+    if not message.params:
+        session.delete(status)
+        session.commit()
     new_bar = " "
     new = True
     if status:
@@ -25,9 +28,9 @@ def dothis(message):
             new_bar += param + " "
     if isinstance(current_set, tuple):
         if message.user.level >= current_set[1]:
-            if not new:
-                del status
-                session.commit()
+            # if not new:
+            #     session.delete(status)
+            #     session.commit()
             return current_set[0](params, system, message)
         else:
             return "Не хватает прав"
@@ -52,7 +55,12 @@ def main():
     return ("settings",
             "set settings",
             dothis,
-            'set | settings {module} {setting} {parameter} {name}\nНастройки',
+            'set | settings {предложанный вариант}\n'
+            'Настройки\n'
+            'После каждого ввода команды, вам предлагаются варианты. '
+            'Для выбора варианта введите команду и вариант через пробел. '
+            'Чтобы вернуться к первоначальному выбору настроек, '
+            'введите команду без параметров',
             0,
             None,
             "Настройки"), (None, exitf, None), None

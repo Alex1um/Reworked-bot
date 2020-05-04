@@ -31,7 +31,9 @@ def main():
     return ("help",  # name
             "help",  # keywords
             dothis,  # callable function
-            '!help {Название команды}\nПолучить помощь по команде',  # help
+            'help {Название команды | номер команды}\n'
+            'Получить помощь по команде\n'
+            'Ввод help без команды выведет список команд',  # help
             0,  # permission level
             None,  # special symbol
             "Помощь по командам"  # short help
