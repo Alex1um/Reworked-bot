@@ -20,10 +20,11 @@ def dothis(message):
 
 
 def main():
-    return ("help",
-            "help",
-            dothis,
-            '!help {Название команды}\nПолучить помощь по команде',
-            0,
-            None
-            ), None, None
+    return ("help",  # name
+            "help",  # keywords
+            dothis,  # callable function
+            '!help {Название команды}\nПолучить помощь по команде',  # help
+            0,  # permission level
+            None  # special symbol
+            ), None, None  # additional functions and settings
+
