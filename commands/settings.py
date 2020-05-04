@@ -9,7 +9,7 @@ def dothis(message):
         (system.db_session.Settings.user_id == message.userid) & (
                 system.db_session.Settings.name == "settings")).first()
     current_set = system.SETTINGS
-    if not message.params:
+    if status and not message.params:
         session.delete(status)
         session.commit()
     new_bar = " "
