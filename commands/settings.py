@@ -14,10 +14,11 @@ def dothis(message):
         for n in status.split():
             current_set = current_set[n]
     params = message.params
-    while isinstance(current_set, dict) and params[0] in current_set.keys():
-        param = params.pop(0)
-        current_set = current_set[param]
-        new_bar += param + " "
+    if params:
+        while isinstance(current_set, dict) and params[0] in current_set.keys():
+            param = params.pop(0)
+            current_set = current_set[param]
+            new_bar += param + " "
     if isinstance(current_set, tuple):
         if message.user.level >= current_set[1]:
             status.delete()
