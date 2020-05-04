@@ -21,7 +21,7 @@ def dothis(message):
     le = 0
     ans = ''
     i = 0
-    for item in system.__news:
+    for item in system.module_news:
         item_lower = item[0].lower()
         if n == 0:
             break
