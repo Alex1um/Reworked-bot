@@ -2,22 +2,28 @@ from Core.core import ChatSystem
 
 
 def permissions(params, system: ChatSystem, message):
-    try:
-        uid = params[0]
-        ulevel = params[1]
-    except IndexError:
-        uid = None
-        ulevel = None
-    otherid, level = int(uid) if uid != 'self' and uid.isdigit() else message.userid, int(
-        ulevel) if ulevel.isdigit() else None
-    other = system.db_session.create_session().query(system.db_session.User).get(otherid)
-    if other:
-        if level is None:
-            return other.level
+    '''
+    Add permission control
+    :param params: param[0] - other id; param[1](option) - level
+    :param system: ChatSystem obj
+    :param message: Message obj
+    :return:
+    '''
+    if params:
+        otherid = int(
+            params[0]) if params[0] != 'self' and params[
+            0].isdigit() else message.userid
+        other = system.db_session.create_session().query(
+            system.db_session.User).get(otherid)
+        if other:
+            if len(params) > 1 and params[1].isdigit():
+                other.level = int(params[1])
+                return "Success"
+            else:
+                return str(other.level)
         else:
-            other.level = level
-            return 'Success'
-    return 'id not found'
+            return "Wrong id"
+    return "There is no params"
 
 
 def main():

@@ -136,6 +136,7 @@ class VK(Chat):
             if r_msg.find('end') != -1:  # exit from active commands
                 if r_msg[:r_msg.find('end')] in self.main_system.defaut_command_symbols:
                     set.delete()
+                    session.commit()
             else:
                 r_msg = set.value + ' ' + r_msg
         for i in self.find_id.finditer(r_msg):  # for @links

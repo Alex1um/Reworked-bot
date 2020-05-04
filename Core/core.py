@@ -237,4 +237,3 @@ class Message(Thread):
                     self.send(i)
             else:
                 self.cls.send(msg, self.sendid, self.msg_id)
-        self.cls.main_system.save_settings()

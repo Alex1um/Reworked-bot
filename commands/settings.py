@@ -7,29 +7,41 @@ def dothis(message):
     session = system.db_session.create_session()
     status = session.query(system.db_session.Settings).filter(
         (system.db_session.Settings.user_id == message.userid) & (
-                system.db_session.Settings.name == "active")).first()
+                system.db_session.Settings.name == "settings")).first()
     current_set = system.SETTINGS
-    new_bar = ""
+    new_bar = " "
+    new = True
     if status:
-        for n in status.split():
+        for n in status.value.split():
+            new_bar += n + " "
             current_set = current_set[n]
+        new = False
     params = message.params
     if params:
-        while isinstance(current_set, dict) and params[0] in current_set.keys():
+        while isinstance(current_set, dict) and\
+                params and params[0] in current_set.keys():
             param = params.pop(0)
             current_set = current_set[param]
             new_bar += param + " "
     if isinstance(current_set, tuple):
         if message.user.level >= current_set[1]:
-            status.delete()
+            if not new:
+                del status
+                session.commit()
             return current_set[0](params, system, message)
         else:
             return "Не хватает прав"
     else:
-        status.value = new_bar
+        if new_bar.strip():
+            if new:
+                session.add(system.db_session.Settings(message.userid,
+                                                       "settings",
+                                                       new_bar.strip()))
+                session.commit()
+            else:
+                status.value = new_bar
+                session.commit()
         return "!settings" + new_bar + ' ' + '{' + '|'.join(current_set.keys()) + '}'
-    # except Exception as f:
-    #     return str(f)
 
 
 def exitf(chat_system: ChatSystem):

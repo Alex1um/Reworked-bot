@@ -66,8 +66,12 @@ class DataBaseSession:
             user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                         sqlalchemy.ForeignKey('users.id'))
             name = sqlalchemy.Column(sqlalchemy.String)
-            value = sqlalchemy.Column(sqlalchemy.String)
+            value = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
+            def __init__(self, user_id, name, value=None):
+                self.user_id = user_id
+                self.name = name
+                self.value = value
 
         self.User = User
         self.Settings = Settings
