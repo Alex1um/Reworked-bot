@@ -1,14 +1,13 @@
 from Core.core import *
 from commands.stupidAI.tools import ChemicalEquations as Ce
 from bs4 import BeautifulSoup as bs
-import requests
 from PIL import Image
 import io
 import requests
+import tempfile
 
 
 def dothis(msg: Message):
-    print(10)
     img, url = Ce.solve_equation(Ce.is_equation(msg.text))
     if img and url:
         ff = requests.get(img)
@@ -26,16 +25,19 @@ def dothis(msg: Message):
         os.remove(f.name)
         res = requests.get(url)
         res.encoding = 'utf-8'
-        text = bs(res.content, 'html.parser').find('div', {'class': 'reactBody'}).contents[0].strip()
+        text = bs(res.content, 'html.parser').find(
+            'div', {'class': 'reactBody'}).contents[0].strip()
         print(text, photo)
         return text, photo
     else:
         return 'Реакции не найдено'
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, *args):
-    ACTIVATES.update({'solve_chemical': {'solchem'}})
-    name = 'solve_chemical'
-    currenthelp = '!solchem\nРешить уравнение'
-    stt = Command(name, currenthelp, dothis, 0)
-    GLOBAL_COMMANDS[name] = stt
+def main():
+    return ("solve_chemical",
+            "solchem",
+            dothis,
+            'solchem {химическое уравнение}\nРешить зимическое уравнение',
+            0,
+            None,
+            'решение химических уравнений'), None, None
