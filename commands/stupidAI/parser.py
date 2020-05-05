@@ -1,4 +1,3 @@
-import nltk
 from pymorphy2.analyzer import MorphAnalyzer
 # from .tools import Equations as Eq
 from commands.stupidAI.tools import Equations as Eq
