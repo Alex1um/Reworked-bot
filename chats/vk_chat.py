@@ -77,7 +77,8 @@ class VK(Chat):
             v=self.api_version)  # getting server
 
     def send_requsest(self, ts):
-        link = f'{self.LPS["server"]}?act=a_check&key={self.LPS["key"]}&ts={ts}&wait=25'  # setting link
+        link = f'{self.LPS["server"]}?act=a_ch' \
+               f'eck&key={self.LPS["key"]}&ts={ts}&wait=25'  # setting link
         res = requests.post(link).json()  # response
         if 'failed' in res.keys():
             if res['failed'] in (3, 4, 2):  # errors

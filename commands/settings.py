@@ -45,7 +45,8 @@ def dothis(message):
             else:
                 status.value = new_bar
                 session.commit()
-        return "!settings" + new_bar + ' ' + '{' + '|'.join(current_set.keys()) + '}'
+        return "!settings" + new_bar + ' ' + '{' + '|'.join(
+            current_set.keys()) + '}'
 
 
 def exitf(chat_system: ChatSystem):

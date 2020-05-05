@@ -14,13 +14,14 @@ def table_file(params, system: ChatSystem, message):
     tr_file = session.query(system.db_session.Settings).filter(
         (system.db_session.Settings.user_id == message.userid) &
         (system.db_session.Settings.name == "random_talks_file")).first()
-    value = tr_file.value if tr_file else 'youtube'
+    value = tr_file.value if tr_file else None
     param = message.params[len(message.params) - len(params) - 1]
     if param:
         if param == 'default':
             session.delete(tr_file)
+            value = None
         elif param == 'current':
-            return value
+            return value if value else 'youtube'
         elif param == 'list':
             return '\n'.join(map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
                                  glob.glob("commands\\files\\*.table")))
