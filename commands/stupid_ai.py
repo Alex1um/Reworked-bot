@@ -3,22 +3,26 @@ from commands.stupidAI import parser
 
 
 def sett(params, system: ChatSystem, message):
-    if params:
+    param = message.params[-1]
+    print(param)
+    if param:
         session = system.db_session.create_session()
         sett = session.query(
             system.db_session.Settings).filter(
             (system.db_session.Settings.user_id == message.userid) &
             (system.db_session.Settings.name == 'stupid_ai')).first()
-        if params[0] in {'True', '1', 'true', 'yes'}:
+        if param in {'False', '0', 'false', 'no'}:
             if not sett:
                 session.add(system.db_session.Settings(
                     message.userid,
                     'stupid_ai',
-                    'False'
+                    'disable'
                 ))
-        elif params[0] in {'False', '0', 'false', 'no'}:
+        elif param in {'True', '1', 'true', 'yes'}:
             if sett:
                 session.delete(sett)
+        elif param == 'current':
+            return str(not bool(sett))
         session.commit()
         return "Success"
     else:
@@ -28,10 +32,12 @@ def sett(params, system: ChatSystem, message):
 def analyze(message):
     system: ChatSystem = message.cls.main_system
     session = system.db_session.create_session()
-    if session.query(
+    enable = session.query(
             system.db_session.Settings).filter(
             (system.db_session.Settings.user_id == message.userid) &
-            (system.db_session.Settings.name == 'stupid_ai')).first() is None:
+            (system.db_session.Settings.name == 'stupid_ai')).first() is None
+    print(enable)
+    if enable:
         # try:
         active_command = session.query(system.db_session.Settings).filter(
             (system.db_session.Settings.user_id == message.userid) &
@@ -58,11 +64,12 @@ def analyze(message):
 
 def main():
     sets = {
-        'stupid_ai': {
+        'enable_stupid_ai': {
             'True': (sett, 0),
             'False': (sett, 0),
             '0': (sett, 0),
-            '1': (sett, 1)
+            '1': (sett, 1),
+            'current': (sett, 0)
         }}
     return (
         "stupid_ai",

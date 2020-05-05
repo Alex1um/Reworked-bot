@@ -64,15 +64,14 @@ def enable_record(params, system: ChatSystem, message):
         if param in {'1', 'True', 'true', 'yes'}:
             if sett:
                 session.delete(sett)
-                session.commit()
         elif param in {'0', 'False', 'false', 'no'}:
             if sett is None:
                 session.add(system.db_session.Settings(message.userid,
                                                        'random_talks_disable',
                                                        'yes'))
-                session.commit()
         else:
             return 'False' if sett else 'True'
+        session.commit()
         return 'Success'
     return "недостаточно параметров"
 
@@ -190,7 +189,8 @@ def main():
             "talk",
             dothis,
             '!talk {необязательно - слово, с которого начинается}\n'
-            'Рандомная фраза, основанная на сообщениях пользователей боту',
+            'Рандомная фраза, основанная на сообщениях пользователей боту.'
+            'Вы можите поменять таблицу со словами, используя настройки',
             0,
             None,
             'Рандомная фраза'), (update_table, None, None), setts
