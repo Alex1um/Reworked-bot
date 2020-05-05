@@ -1,6 +1,4 @@
-from Core.core import *
 import pickle
-import os
 
 
 def dothis(message):
@@ -65,7 +63,7 @@ def dothis(message):
             elif p[0] == 'morse':
                 if p[1] in {'rus', 'eng'}:
                     if p[2] in {'en', 'de'}:
-                        f = open(fr'commands\files\morse_{p[1]}.tr', 'rb')
+                        f = open(fr'commands\\files\\morse_{p[1]}.tr', 'rb')
                         return code(' '.join(p[3::]), pickle.load(f), p[2])
                         f.close()
                 return '!translate morse {rus|eng} {en|de} {text}'
@@ -74,9 +72,13 @@ def dothis(message):
     return '!translate {er|tr1|tr2|morse} {text}'
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, *args):
-    ACTIVATES.update({'translate': {'translate', 'tr'}})
-    name = 'translate'
-    currenthelp = '{!translate | !tr} {er}\nПеревод текста'
-    translate = Command(name, currenthelp, dothis, 0)
-    GLOBAL_COMMANDS[name] = translate
+def main():
+    return ("translate",
+            "tr translate",
+            dothis,
+            'translate | tr {er | tr1 | tr2}\n'
+            'translate | tr morse {rus | eng} {en | de}\n'
+            'Перевод текста ',
+            0,
+            None,
+            "Перевод текста"), None, None

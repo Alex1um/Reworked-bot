@@ -18,7 +18,8 @@ class ChatSystem:
     ON_LOAD = list()
 
     def __init__(self, modules: Dict[str, str], db_file=None,
-                 default_command_symbols=("!", "test>")):
+                 default_command_symbols=("!", "test>"),
+                 mode: Union['full', 'commands', None]="commands"):
         self.defaut_command_symbols = default_command_symbols
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
@@ -26,7 +27,15 @@ class ChatSystem:
             db_file = f".\\Core\\db\\db-{ChatSystem.system_id}.sqlite"
         exists = os.path.exists(db_file)
         self.db_session = db_session.DataBaseSession(db_file)
-        self.load_modules(modules, not exists)
+        is_init = not exists
+        if exists:
+            if mode == "full":
+                self.clear_database(False)
+                is_init = True
+            elif mode == "commands":
+                self.clear_database(self.db_session.CommandTable)
+                is_init = True
+        self.load_modules(modules, is_init)
         self.reload()
 
     def reload(self):
@@ -85,8 +94,17 @@ class ChatSystem:
             except Exception as f:
                 pass
 
-    def save_settings(self):
-        self.db_session.create_session().commit()
+    def clear_database(self, table):
+        session = self.db_session.create_session()
+        if table:
+            for user in session.query(table):
+                session.delete(user)
+            session.commit()
+        else:
+            meta =self.db_session.SqlAlchemyBase.metadata
+            for table in reversed(meta.sorted_tables):
+                session.execute(table.delete())
+            session.commit()
 
     def invoke_command(self, message, command_name: str) -> str and list:
         return self.ACTIVE_ACTIONS[command_name](message)

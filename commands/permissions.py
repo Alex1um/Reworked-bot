@@ -22,8 +22,8 @@ def permissions(params, system: ChatSystem, message):
             else:
                 return str(other.level)
         else:
-            return "Wrong id"
-    return "There is no params"
+            return "Неправильный id"
+    return "Не хватает параметров. Необходимые параметры: {id} или self; число"
 
 
 def main():

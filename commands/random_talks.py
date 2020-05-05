@@ -3,13 +3,13 @@ import glob
 import random
 import pickle
 import re
-import requests
+from functools import partial
 import gtts
 import time
 import os
 
 
-def table_file(self, message, length):
+def table_file(params, system: ChatSystem, message):
     param = message.params[length]
     name = message.params[length + 1:]
     if name:
@@ -123,4 +123,11 @@ def main():
                 'no': (partial(enable_record, False), 0),
                 'False': (partial(enable_record, False), 0),
                 'current': (partial(enable_record, None), 0)}}}
-    return ("random_talk", "talk", dothis, '!talk\nРандомная фраза', 0, None), (update_table, None), setts
+    return ("random_talk",
+            "talk",
+            dothis,
+            '!talk {необязательно - слово, с которого начинается}\n'
+            'Рандомная фраза',
+            0,
+            None,
+            'Рандомная фраза'), (update_table, None, None), setts
