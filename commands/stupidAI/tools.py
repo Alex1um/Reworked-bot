@@ -3,7 +3,7 @@ import re
 from string import ascii_lowercase
 from typing import *
 import numpy as np
-from scipy.optimize import fsolve
+# from scipy.optimize import fsolve
 from bs4 import BeautifulSoup as bs
 import requests
 import chats.vk_chat as chat
@@ -94,7 +94,8 @@ class Equations:
     @staticmethod
     def solve_equation(eq: Callable, roots: int) -> set or Exception:
         try:
-            a = np.round(fsolve(eq, np.arange(-100, 100, 200 / roots / 5), xtol=1e-12), 3)
+            # a = np.round(fsolve(eq, np.arange(-100, 100, 200 / roots / 5), xtol=1e-12), 3)
+            a = "not working yet"
             return set(a)
         except Exception as f:
             return f
