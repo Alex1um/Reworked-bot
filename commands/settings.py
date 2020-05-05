@@ -11,6 +11,7 @@ def dothis(message):
     current_set = system.SETTINGS
     if status and not message.params:
         session.delete(status)
+        status = None
         session.commit()
     new_bar = " "
     new = True
@@ -19,7 +20,7 @@ def dothis(message):
             new_bar += n + " "
             current_set = current_set[n]
         new = False
-    params = message.params
+    params = message.params.copy()
     if params:
         while isinstance(current_set, dict) and\
                 params and params[0] in current_set.keys():
@@ -58,9 +59,10 @@ def main():
             'set | settings {предложанный вариант}\n'
             'Настройки\n'
             'После каждого ввода команды, вам предлагаются варианты. '
-            'Для выбора варианта введите команду и вариант через пробел. '
+            'Для выбора варианта введите команд'
+            'у и один из вариантов через пробел. '
             'Чтобы вернуться к первоначальному выбору настроек, '
-            'введите команду без параметров',
+            'введите команду set без параметров',
             0,
             None,
             "Настройки"), (None, exitf, None), None
