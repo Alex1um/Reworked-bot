@@ -107,12 +107,17 @@ class VK(Chat):
         ).first()
         attachments = res['object']['message']['attachments'] if res[
             'object']['message']['attachments'] else []
-        if is_fwding is None or\
-                '-fwd' not in res['object']['message']['text'] or \
-                not res['object']['message'][
-                    'fwd_messages']:  # for forward messages
-            r_msg = res['object']['message']['text'].strip()
-        else:  # для вложенных сообщений
+        # if is_fwding is None and res['object']['message']['fwd_messages'] or\
+        #         '-fwd' not in res['object']['message']['text'] or \
+        #         not res['object']['message'][
+        #             'fwd_messages']:  # for forward messages
+        if (is_fwding is None or '-fwd' in res[
+            'object'
+        ]['message'][
+            'text'
+        ]) and res[
+            'object'
+        ]['message']['fwd_messages']:  # для вложенных сообщений
             r_msg = res['object']['message']['text'][
                     :res['object']['message']['text'].find('-fwd')]
 
@@ -136,6 +141,8 @@ class VK(Chat):
 
             r_msg += res['object']['message']['text'][
                      res['object']['message']['text'].find('-fwd') + 4::]
+        else:
+            r_msg = res['object']['message']['text'].strip()
         r_date = res['object']['message']['date']  # date
         r_sendid = res['object']['message']['peer_id']  # from send
         r_ctype = 'vk'

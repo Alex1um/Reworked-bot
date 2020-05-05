@@ -25,7 +25,6 @@ def dothis(message):
         system.db_session.Settings).filter(
         (system.db_session.Settings.user_id == message.userid) &
         (system.db_session.Settings.name == "active")).first()
-    print(message.attachments)
     if message.attachments['sound']:
         try:
             for attachment in message.attachments['sound']:
@@ -49,11 +48,11 @@ def dothis(message):
                         if new_song not in ans:
                             ans += f'>>{artist} - {title}'
                             ans += '\n'
-                    os.remove(dir)
                 else:
                     ans += 'Не найдено'
                 yield ans
                 ans += "\n"
+                os.remove(dir)
         except Exception as f:
             ans += "Произошла непредвиденная ошибка: " + str(f) + "\n"
             raise f
@@ -61,7 +60,7 @@ def dothis(message):
             if current_cmd:
                 session.delete(current_cmd)
                 session.commit()
-            return str(ans)
+            yield str(ans)
     elif '-exit' in message.params and current_cmd:
         session.delete(current_cmd)
         session.commit()
@@ -72,7 +71,7 @@ def dothis(message):
                 'active',
                 system.defaut_command_symbols[0] + "name"))
             session.commit()
-        return 'Прикрепите аудио или напишите -exit'
+        yield 'Прикрепите аудио или напишите -exit'
 
 
 def main():
