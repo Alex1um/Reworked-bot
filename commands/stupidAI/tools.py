@@ -2,12 +2,10 @@ import math
 import re
 from string import ascii_lowercase
 from typing import *
-import numpy as np
+# import numpy as np
 # from scipy.optimize import fsolve
 from bs4 import BeautifulSoup as bs
 import requests
-import chats.vk_chat as chat
-import tempfile
 
 names = {i for i in dir(math) if i[:2] != '__'}
 names |= set(ascii_lowercase)
