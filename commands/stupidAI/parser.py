@@ -17,9 +17,11 @@ error = {'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 
 def from_translit(word: str, trs: dict = translit):
     i = 0
     formated = ''
-    while ll := len(word) != i:
+    ll = len(word)
+    while ll != i:
         for k, v in trs.items():
-            if word[i: (ll1 := len(k)) + i] == k:
+            ll1 = len(k)
+            if word[i:ll1 + i] == k:
                 formated += v
                 i += ll1
                 break
@@ -27,6 +29,7 @@ def from_translit(word: str, trs: dict = translit):
             if word[i].isalpha():
                 formated += word[i]
             i += 1
+        l1 = len(word)
     return formated
 
 
@@ -116,7 +119,8 @@ def parse2(string: str, string2: str = None):
     if parsed['predicate']:
         if parsed['predicate'][0][0] in {'реши', 'вычисли', 'посчитай'}:
             # print(1, string)
-            if eqs := Eq.find_eq(string):  # решить уравнение
+            eqs = Eq.find_eq(string)
+            if eqs:  # решить уравнение
                 print("this is equation ")
                 for eq in eqs:
                     eq, roots = Eq.parse_eq(eq)
