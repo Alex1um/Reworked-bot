@@ -1,8 +1,7 @@
-from Core.core import Command
 import time
 import pymorphy2
 morph = pymorphy2.MorphAnalyzer()
-import requests
+
 
 def asd(message):
     if message.params[0] != 'test':
@@ -30,6 +29,12 @@ def asd(message):
             return 0
 
 
-def main(activates: dict, global_commands: dict, passive: list, global_settings: dict):
-    activates.update({'test': ('t', 'test')})
-    global_commands['test'] = Command('test', '', asd, 8)
+def main():
+    return (
+        'test',
+        't test',
+        asd,
+        0,
+        None,
+        'Проверка манулов'
+    ), None, None
