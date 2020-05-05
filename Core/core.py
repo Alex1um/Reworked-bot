@@ -54,7 +54,7 @@ class ChatSystem:
                 files, list) else tuple(files)
             for i in files:
                 if '!' + i not in dirs[dir] and i[0] != '!':
-                    if i[:-3] == ".py":
+                    if i[-3:] == ".py":
                         i = i[:-3]
                     print(dir, i)
                     exec(f'from {dir} import {i}')
