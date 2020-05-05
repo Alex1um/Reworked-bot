@@ -89,7 +89,7 @@ class VK(Chat):
 
     def message_parse(self, res):
         r_msg = ''
-        attachments = res['object']['message']['attachments'] if not res['object']['message']['attachments'] else []
+        attachments = res['object']['message']['attachments'] if res['object']['message']['attachments'] else []
         if '-fwd' not in res['object']['message']['text'] or not res['object']['message']['fwd_messages']:  # for forward messages
             r_msg = res['object']['message']['text'].strip()
         else:  # для вложенных сообщений

@@ -18,7 +18,14 @@ acrcloud = ACRCloudRecognizer(config)
 
 
 def dothis(message):
+    system: ChatSystem = message.cls.main_system
+    session = system.db_session.create_session()
     ans = ''
+    current_cmd = session.query(
+        system.db_session.Settings).filter(
+        (system.db_session.Settings.user_id == message.userid) &
+        (system.db_session.Settings.name == "active")).first()
+    print(message.attachments)
     if message.attachments['sound']:
         try:
             for attachment in message.attachments['sound']:
@@ -29,30 +36,51 @@ def dothis(message):
                       attachment[1]
                 urllib.request.urlretrieve(attachment[0], dir)
 
-                a = acrcloud.recognize_by_file(dir, 0)
-                artist = re.search(r'"artists":\[{"name":"([^\"]+)"}]', a)
-                title = re.search(r'"title":"([^\"]+)"', a)
-                ans += f'>>>{artist.group(1)} - {title.group(1)}'\
-                    if artist is not None and title is not None \
-                    else '>>>Not found'
-                ans += '\n'
-                os.remove(dir)
+                res = eval(acrcloud.recognize_by_file(dir, 0))
+                print(res)
+                if res['status']["msg"] != "No result":
+                    # artist = re.search(r'"artists":\[{"name":"([^\"]+)"}]', a)
+                    for song in res["metadata"]["music"]:
+                        artist = ', '.join(map(lambda x: x['name'],
+                                               song["artists"]))
+                    # title = re.search(r'"title":"([^\"]+)"', a)
+                        title = song['title']
+                        new_song = f'>>{artist} - {title}'
+                        if new_song not in ans:
+                            ans += f'>>{artist} - {title}'
+                            ans += '\n'
+                    os.remove(dir)
+                else:
+                    ans += 'Не найдено'
+                yield ans
+                ans += "\n"
         except Exception as f:
-            ans = f
+            ans += "Произошла непредвиденная ошибка: " + str(f) + "\n"
+            raise f
         finally:
-            try:
-                del message.cls.ACTIVE_COMMANDS[message.sendid]
-            except KeyError:
-                pass
-            del message.attachments['sound']
+            if current_cmd:
+                session.delete(current_cmd)
+                session.commit()
             return str(ans)
+    elif '-exit' in message.params and current_cmd:
+        session.delete(current_cmd)
+        session.commit()
     else:
-        message.cls.ACTIVE_COMMANDS[message.sendid] = '!name'
-        return 'Your sound?'
+        if current_cmd is None:
+            session.add(system.db_session.Settings(
+                message.userid,
+                'active',
+                system.defaut_command_symbols[0] + "name"))
+            session.commit()
+        return 'Прикрепите аудио или напишите -exit'
 
 
-def main(ACTIVATES, GLOBAL_COMMANDS, *args):
-    ACTIVATES.update({'sound_name': {'name'}})
-    name = 'sound_name'
-    currenthelp = '!name\nВыводит название песни'
-    GLOBAL_COMMANDS[name] = Command(name, currenthelp, dothis, 0)
+def main():
+    return ("sound_name",
+            "name",
+            dothis,
+            "name\n"
+            "Найти назваине песни. Нужно прикрепить аудио",
+            0,
+            None,
+            "Найти название песни"), None, None
