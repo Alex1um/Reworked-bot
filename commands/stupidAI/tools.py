@@ -2,7 +2,6 @@ import math
 import re
 from string import ascii_lowercase
 from typing import *
-from scipy import vectorize
 import numpy as np
 from scipy.optimize import fsolve
 from bs4 import BeautifulSoup as bs
@@ -77,7 +76,7 @@ class Equations:
             return False if set(Equations.re_any_word.findall(s.lower())) - names else True
 
     @staticmethod
-    def parse_eq(eq: str) -> vectorize and int:
+    def parse_eq(eq: str) -> Callable and int:
         parsed = eq
         a = Equations.__wrong_power.findall(parsed)
         for e in a:
@@ -93,7 +92,7 @@ class Equations:
             return f
 
     @staticmethod
-    def solve_equation(eq: vectorize, roots: int) -> set or Exception:
+    def solve_equation(eq: Callable, roots: int) -> set or Exception:
         try:
             a = np.round(fsolve(eq, np.arange(-100, 100, 200 / roots / 5), xtol=1e-12), 3)
             return set(a)
