@@ -87,9 +87,10 @@ def dothis(message):
                    sample(words, randint(4, salades_max)),
                    sample(words, randint(4, salades_max))]
         message.add_setting(session, 'salades', str(salades))
-    elif message.params:
-        kill = int(message.params[0])
+    else:
         salades = literal_eval(salades_set.value)
+    if message.params:
+        kill = int(message.params[0])
         salades.pop(kill - 1)
         salades = conc(*salades)
         salades_set.value = str(salades)
