@@ -152,10 +152,11 @@ class VK(Chat):
                 r_attachments['image'].append(
                     attachment['photo']['sizes'][-1]['url'])
             elif attachment['type'] == 'doc':
-                if attachment['doc']['ext'] in {'wav', 'mp3'}:
+                if attachment['doc']['ext'] in {'wav', 'mp3', 'wave'}:
                     r_attachments['sound'].append(
                         (attachment['doc']['url'],
-                         attachment['doc']['ext']))  # 0: link; 1: extension
+                         attachment['doc']['ext'].replace("wave", 'wav')))
+                    # 0: link; 1: extension
             elif attachment['type'] == 'audio':
                 r_attachments['sound'].append(
                     (attachment['audio']['url'], 'mp3'))
