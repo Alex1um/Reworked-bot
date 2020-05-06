@@ -4,6 +4,8 @@ from threading import Thread
 from .models import db_session
 from typing import *
 import re
+import schedule
+import time
 
 
 def nothing(*chat, **kwargs):
@@ -49,6 +51,12 @@ class ChatSystem:
                 is_init = True
         self.load_modules(modules, is_init)
         self.reload()
+        Thread(target=self.shedule_run).start()
+
+    def shedule_run(self):
+        while 1:
+            schedule.run_pending()
+            time.sleep(1)
 
     def reload(self):
         for action in self.ON_LOAD:
