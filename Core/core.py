@@ -36,7 +36,7 @@ class ChatSystem:
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
         if db_file is None:
-            db_file = f".\\Core\\db\\db-{ChatSystem.system_id}.sqlite"
+            db_file = fr"./Core/db/db-{ChatSystem.system_id}.sqlite"
         exists = os.path.exists(db_file)
         self.db_session = db_session.DataBaseSession(db_file)
         is_init = not exists
