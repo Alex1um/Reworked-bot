@@ -12,17 +12,18 @@ def sett(params, system: ChatSystem, message):
             (system.db_session.Settings.user_id == message.userid) &
             (system.db_session.Settings.name == 'stupid_ai')).first()
         if param in {'False', '0', 'false', 'no'}:
+            if sett:
+                session.delete(sett)
+
+        elif param in {'True', '1', 'true', 'yes'}:
             if not sett:
                 session.add(system.db_session.Settings(
                     message.userid,
                     'stupid_ai',
                     'disable'
                 ))
-        elif param in {'True', '1', 'true', 'yes'}:
-            if sett:
-                session.delete(sett)
         elif param == 'current':
-            return str(not bool(sett))
+            return str(bool(sett))
         session.commit()
         return "Success"
     else:
