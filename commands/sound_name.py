@@ -34,7 +34,8 @@ def dothis(message):
                 res = eval(acrcloud.recognize_by_file(dir, 0))
                 print(res)
                 if 'error' in res['status']['msg'].lower():
-                    message.delete_active(session)
+                    if current_cmd:
+                        message.delete_active(session)
                     return 'Произошла ошибка'
                 if res['status']["msg"] != "No result":
                     # artist = re.search(r'"artists":\[{"name":"([^\"]+)"}]', a)
