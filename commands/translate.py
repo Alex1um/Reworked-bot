@@ -63,7 +63,7 @@ def dothis(message):
             elif p[0] == 'morse':
                 if p[1] in {'rus', 'eng'}:
                     if p[2] in {'en', 'de'}:
-                        f = open(fr'commands\\files\\morse_{p[1]}.tr', 'rb')
+                        f = open(fr'commands/files/morse_{p[1]}.tr', 'rb')
                         return code(' '.join(p[3::]), pickle.load(f), p[2])
                         f.close()
                 return '!translate morse {rus|eng} {en|de} {text}'

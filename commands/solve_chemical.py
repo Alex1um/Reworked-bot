@@ -19,7 +19,7 @@ def dothis(msg: Message):
             a.paste(img, (0, (hn - h) // 2))
             img = a
         f = tempfile.NamedTemporaryFile(
-            dir='temp\\', suffix='.png', delete=False,)
+            dir='temp/', suffix='.png', delete=False,)
         f.close()
         img.save(f.name, 'PNG')
         photo = msg.cls.upload_photo(f.name, msg.userid)

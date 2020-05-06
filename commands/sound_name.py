@@ -25,7 +25,7 @@ def dothis(message):
         try:
             for attachment in message.attachments['sound']:
                 dir = os.path.abspath(os.curdir) + \
-                      '\\temp\\' + \
+                      '/temp/' + \
                       time.strftime("%Y%m%d-%H%M%S") + \
                       '.' + \
                       attachment[1]

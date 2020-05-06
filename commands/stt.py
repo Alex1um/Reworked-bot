@@ -29,7 +29,7 @@ def dothis(message):
                 ext = attachment[1]
                 path = os.path.abspath(os.curdir)
                 fname = time.strftime("%Y%m%d-%H%M%S") + '.'
-                dir = path + '\\temp\\' + fname
+                dir = path + '/temp/' + fname
                 urllib.request.urlretrieve(
                     attachment[0], dir + ext)  # getting file
 
