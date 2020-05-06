@@ -10,7 +10,9 @@ import tempfile
 def dothis(msg: Message):
     img, url = Ce.solve_equation(Ce.is_equation(msg.text))
     if img and url:
-        ff = requests.get(img)
+        session = requests.session()
+        session.trust_env = False
+        ff = session.get(img)
         img = Image.open(io.BytesIO(ff.content))
         w, h = img.size
         if w / h < 20:
@@ -24,7 +26,7 @@ def dothis(msg: Message):
         img.save(f.name, 'PNG')
         photo = msg.cls.upload_photo(f.name, msg.userid)
         os.remove(f.name)
-        res = requests.get(url)
+        res = session.get(url)
         res.encoding = 'utf-8'
         text = bs(res.content, 'html.parser').find(
             'div', {'class': 'reactBody'}).contents[0].strip()
