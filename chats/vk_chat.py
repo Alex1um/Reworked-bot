@@ -4,6 +4,7 @@ import vk
 import requests
 import time
 from types import *
+from typing import *
 import re
 
 
@@ -34,7 +35,7 @@ class VK(Chat):
         except KeyError:
             self.get_server()  # if error
 
-    def send(self, res, id, rid, attachment=None):
+    def send(self, res, id, rid, attachment=None, keyboard=None):
         if not isinstance(res, (tuple, list)):
             res = [res]
         for text in res:
@@ -43,7 +44,8 @@ class VK(Chat):
                                           message=text,
                                           v=self.api_version,
                                           random_id=rid,
-                                          attachment=attachment
+                                          attachment=attachment,
+                                          keyboard=keyboard
                                           )  # sending message
             elif isinstance(text, GeneratorType):
                 a = True
@@ -53,7 +55,8 @@ class VK(Chat):
                                                           message=msg,
                                                           v=self.api_version,
                                                           random_id=rid,
-                                                          attachment=attachment
+                                                          attachment=attachment,
+                                                          keyboard=keyboard
                                                           )  # sending message
                         a = False
                     else:
@@ -207,3 +210,6 @@ class VK(Chat):
                                                    hash=pfile['hash'],
                                                    v=self.api_version)[0]
         return f"photo{doc['owner_id']}_{doc['id']}"
+
+    def make_keyboard(self, buttons):
+        pass

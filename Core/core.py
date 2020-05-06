@@ -240,18 +240,50 @@ class Message(Thread):
     def send(self, msg):
         if msg is not None:
             if isinstance(msg, tuple):
-                if msg[0] is None:
-                    self.cls.send(res='...',
-                                  id=self.sendid,
-                                  rid=self.msg_id,
-                                  attachment=msg[1])
-                else:
-                    self.cls.send(msg[0],
-                                  self.sendid,
-                                  self.msg_id,
-                                  attachment=msg[1])
+                self.cls.send(msg[0] if msg[0] else '...',
+                              self.sendid,
+                              self.msg_id,
+                              attachment=msg[1]
+                              )
             elif isinstance(msg, list):
                 for i in msg:
                     self.send(i)
+            elif isinstance(msg, dict):
+                self.cls.send(msg['msg'] if 'msg' in msg.keys() else '...',
+                              self.sendid,
+                              self.msg_id,
+                              attachment=msg['attachment'] if
+                              'attachment' in msg.keys() else None,
+                              keyboard=msg['keyboard'] if
+                              'keyboard' in msg.keys() else None
+                              )
             else:
                 self.cls.send(msg, self.sendid, self.msg_id)
+
+    def get_setting(self, session, setting: str):
+        return session.query(
+            self.cls.main_system.db_session.Settings
+        ).filter(
+            (
+                    self.cls.main_system.db_session.Settings.user_id == self.userid
+            ) & (
+                    self.cls.main_system.db_session.Settings.name == setting
+            )
+        ).first()
+
+    def add_setting(self, session, setting, value=None):
+        session.add(
+            self.cls.main_system.db_session.Settings(
+                self.userid,
+                setting,
+                value if setting != 'active' else self.sym + value
+            )
+        )
+        session.commit()
+
+    def delete_active(self, session):
+        session.delete(self.get_setting(session, 'active'))
+        session.commit()
+
+    def get_session(self):
+        return self.cls.main_system.db_session.create_session()

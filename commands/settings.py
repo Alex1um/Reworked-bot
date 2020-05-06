@@ -2,12 +2,9 @@ from Core.core import *
 
 
 def dothis(message):
-    # try:
     system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
-    status = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) & (
-                system.db_session.Settings.name == "settings")).first()
+    session = message.get_session()
+    status = message.get_setting(session, 'settings')
     current_set = system.SETTINGS
     if status and not message.params:
         session.delete(status)
@@ -29,18 +26,13 @@ def dothis(message):
             new_bar += param + " "
     if isinstance(current_set, tuple):
         if message.user.level >= current_set[1]:
-            # if not new:
-            #     session.delete(status)
-            #     session.commit()
             return current_set[0](params, system, message)
         else:
             return "Не хватает прав"
     else:
         if new_bar.strip():
             if new:
-                session.add(system.db_session.Settings(message.userid,
-                                                       "settings",
-                                                       new_bar.strip()))
+                message.add_setting(session, 'settings', new_bar.strip())
                 session.commit()
             else:
                 status.value = new_bar

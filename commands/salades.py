@@ -6,10 +6,9 @@ import os
 
 
 def salades_op(params, system: ChatSystem, message):
+    print('asdddddddddddddddddddd')
     session = system.db_session.create_session()
-    salades_file = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "salades_file")).first()
+    salades_file = message.get_setting(session, 'salades_file')
 
     file = salades_file.value if salades_file else None
     prev_param = message.params[-1]
@@ -28,15 +27,11 @@ def salades_op(params, system: ChatSystem, message):
         session.delete(salades_file)
         file = None
     elif prev_param == 'max':
-        salades_max = session.query(system.db_session.Settings).filter(
-            (system.db_session.Settings.user_id == message.userid) &
-            (system.db_session.Settings.name == "salades_max")).first()
+        salades_max = message.get_setting(session, 'salades_max')
 
         if params and params[0] != '4' and params[0].isdigit():
             if salades_max is None:
-                session.add(system.db_session.Settings(message.userid,
-                                                       'salades_max',
-                                                       params[0]))
+                message.add_setting(session, 'salades_max', params[0])
             else:
                 salades_max.value = int(params[0])
         else:
@@ -45,23 +40,25 @@ def salades_op(params, system: ChatSystem, message):
         if salades_file:
             salades_file.value = file
         else:
-            session.add(system.db_session.Settings(
-                message.userid, 'random_talks_file', file))
+            message.add_setting(session, 'random_talks_file', file)
+            # session.add(system.db_session.Settings(
+            #     message.userid, 'random_talks_file', file))
     session.commit()
     return 'Success'
 
 
 def dothis(message):
-    system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
-    salades_file = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "salades_file")).first()
+    session = message.get_session()
+    salades_file = message.get_setting(session, 'salades_file')
     salades_file = salades_file.value if salades_file else 'food'
-    salades_max = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "salades_max")).first()
-    salades_max = int(salades_max.value) if salades_max else 4
+    salades_max = message.get_setting(session, 'salades_max')
+    salades_max = int(salades_max.value) if salades_max else 6
+    salades_set = message.get_setting(session, 'salades')
+    active = message.get_setting(session, 'active')
+    if active and '-exit' in message.params:
+        message.delete_active(session)
+    elif active is None:
+        message.add_setting(session, 'active', 'salades')
 
     def conc(a: list, b: list):
         shuffle(a)
@@ -76,27 +73,33 @@ def dothis(message):
         args = list(args)
         for i, e in enumerate(args):
             le = len(e)
-            args[i] = sample(e, randint(le // 2 + 1, le)) + sample(words, randint(0, salades_max - le))
+            args[i] = sample(
+                e, randint(le // 2 + 1, le)
+            ) + sample(words, randint(0, salades_max - le))
         print(args, '---------------------')
         return args
 
     words = []
-    salades = []
     with open(fr"{os.getcwd()}\\commands\\files\\{salades_file}.saladict", 'rb') as f:
         words = load(f)
-    if not message.params:
-        salades = [sample(words, randint(4, 6)), sample(words, randint(4, 6)), sample(words, randint(4, 6))]
-        message.cls.ACTIVE_COMMANDS[message.sendid] = message.msg + ' ' + str(salades).replace(' ', '')
-    else:
-        try:
-            kill = int(message.params[1])
-            salades = literal_eval(message.params[0])
-            salades.pop(kill - 1)
-            salades = conc(*salades)
-            message.cls.ACTIVE_COMMANDS[message.sendid] = message.sym + message.command + ' ' + str(salades).replace(' ', '')
-        except Exception as f:
-            return f
-    return '!end to close\nВыберите худшую комбинацию:\n' + '\n'.join((str(n + 1) + '.' + str(salad) for n, salad in enumerate(salades)))
+    if salades_set is None:
+        salades = [sample(words, randint(4, salades_max)),
+                   sample(words, randint(4, salades_max)),
+                   sample(words, randint(4, salades_max))]
+        message.add_setting(session, 'salades', str(salades))
+    elif message.params:
+        kill = int(message.params[0])
+        salades = literal_eval(salades_set.value)
+        salades.pop(kill - 1)
+        salades = conc(*salades)
+        salades_set.value = str(salades)
+        session.commit()
+    ans = '\n'.join(
+        (
+            str(n + 1) + '.' + str(
+                salad
+            )[1:-1].replace("'", '') for n, salad in enumerate(salades)))
+    return 'Напишите -exit для выхода\nВыберите худшую комбинацию:\n' + ans
 
 
 def main():
@@ -111,7 +114,8 @@ def main():
         'salades',
         'salades',
         dothis,
-        'salades\nИгра в салатики. Выберите из списка тот, который нужно убрать',
+        'salades\n'
+        'Игра в салатики. Выберите из списка тот, который нужно убрать',
         0,
         None,
         'Игра в салатики'

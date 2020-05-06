@@ -9,13 +9,15 @@ witkey = 'GQ2ITHTRXYD2WVOPYOZ3AEY3NRBLNIS3'
 
 
 def dothis(message):
-    system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
+    # system: ChatSystem = message.cls.main_system
+    # session = system.db_session.create_session()
+    session = message.get_session()
     ans = ''
-    current_cmd = session.query(
-        system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "active")).first()
+    current_cmd = message.get_setting(session, 'active')
+    # current_cmd = session.query(
+    #     system.db_session.Settings).filter(
+    #     (system.db_session.Settings.user_id == message.userid) &
+    #     (system.db_session.Settings.name == "active")).first()
     print(message.attachments)
     if message.attachments['sound']:
         try:

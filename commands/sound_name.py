@@ -18,13 +18,9 @@ acrcloud = ACRCloudRecognizer(config)
 
 
 def dothis(message):
-    system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
+    session = message.get_session()
     ans = ''
-    current_cmd = session.query(
-        system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "active")).first()
+    current_cmd = message.get_setting(session, 'active')
     if message.attachments['sound']:
         try:
             for attachment in message.attachments['sound']:
@@ -66,10 +62,7 @@ def dothis(message):
         session.commit()
     else:
         if current_cmd is None:
-            session.add(system.db_session.Settings(
-                message.userid,
-                'active',
-                system.defaut_command_symbols[0] + "name"))
+            message.add_setting(session, 'active', 'name')
             session.commit()
         yield 'Прикрепите аудио или напишите -exit'
 

@@ -10,10 +10,8 @@ import os
 
 
 def table_file(params, system: ChatSystem, message):
-    session = system.db_session.create_session()
-    tr_file = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "random_talks_file")).first()
+    session = message.get_session()
+    tr_file = message.get_setting(session, 'random_talks_file')
     value = tr_file.value if tr_file else None
     param = message.params[len(message.params) - len(params) - 1]
     if param:
@@ -48,18 +46,14 @@ def table_file(params, system: ChatSystem, message):
         if tr_file:
             tr_file.value = value
         else:
-            session.add(system.db_session.Settings(
-                message.userid, 'random_talks_file', value))
+            message.add_setting(session, 'random_talks_file', value)
     session.commit()
     return 'Success'
 
 
 def enable_record(params, system: ChatSystem, message):
-    session = system.db_session.create_session()
-    sett = session.query(
-        system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == 'random_talks_disable')).first()
+    session = message.get_session()
+    sett = message.get_setting(session, 'random_talks_disable')
     param = message.params[-1]
     if param:
         if param in {'1', 'True', 'true', 'yes'}:
@@ -67,9 +61,7 @@ def enable_record(params, system: ChatSystem, message):
                 session.delete(sett)
         elif param in {'0', 'False', 'false', 'no'}:
             if sett is None:
-                session.add(system.db_session.Settings(message.userid,
-                                                       'random_talks_disable',
-                                                       'yes'))
+                message.add_setting(session, 'random_talks_disable', 'yes')
         else:
             return 'False' if sett else 'True'
         session.commit()
@@ -78,11 +70,8 @@ def enable_record(params, system: ChatSystem, message):
 
 
 def dothis(message):
-    system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
-    tr_file = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "random_talks_file")).first()
+    session = message.get_session()
+    tr_file = message.get_setting(session, 'random_talks_file')
     file = tr_file.value if tr_file else 'youtube'
     try:
         with open(rf"commands\\files\\{file}.table", 'rb') as f:
@@ -126,15 +115,9 @@ def dothis(message):
 
 
 def update_table(message):
-    system: ChatSystem = message.cls.main_system
-    session = system.db_session.create_session()
-    sett = session.query(
-        system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == 'random_talks_disable')).first()
-    tr_file = session.query(system.db_session.Settings).filter(
-        (system.db_session.Settings.user_id == message.userid) &
-        (system.db_session.Settings.name == "random_talks_file")).first()
+    session = message.get_session()
+    tr_file = message.get_setting(session, 'random_talks_file')
+    sett = message.get_setting(session, 'random_talks_disable')
     file = tr_file.value if tr_file else 'youtube'
     if sett is None:
         try:
