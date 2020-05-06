@@ -157,7 +157,8 @@ class ChatSystem:
         session = self.db_session.create_session()
         v = " " + value + " "
         k = session.query(self.db_session.CommandTable).filter(
-            self.db_session.CommandTable.activates.contains(v)).first()
+            self.db_session.CommandTable.activates.contains(v) | (
+                    self.db_session.CommandTable.name == v)).first()
         if k:
             return k
         return None
