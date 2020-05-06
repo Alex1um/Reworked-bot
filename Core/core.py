@@ -3,6 +3,7 @@ import os
 from threading import Thread
 from .models import db_session
 from typing import *
+import re
 
 
 def nothing(*chat, **kwargs):
@@ -187,6 +188,8 @@ class Chat(Thread):
     Default struct for chat
 
     '''
+    find_id = re.compile(r'\[id(\d+)\|@\w+]')
+
 
     def __init__(self, main_system: ChatSystem):
         super().__init__()
@@ -206,8 +209,8 @@ class Message(Thread):
     wtype = ''  # chat type
     command = ''  # command name
     msg_id = 0  # message id
-    sendid = ''
-    userid = 0  # sender id
+    sendid = ''  # to send
+    userid = 0  # sender(bot) id
     msg = ''  # message text
     date = ''  # message date
     text = ''  # message text without command
@@ -234,7 +237,15 @@ class Message(Thread):
         self.date = parsed['date']
         self.sendid = parsed['sendid']
         self.userid = parsed['userid']
-        self.user = session.query(system.db_session.User).get(self.userid)
+        self.user = session.query(
+            system.db_session.User
+        ).filter(
+            (
+                    system.db_session.User.id == self.userid
+            ) & (
+                    system.db_session.User.type == self.wtype
+            )
+        ).first()
 
         self.sym = system.get_command_symbol(self.msg)
         self.command = system.getcommand(
@@ -255,7 +266,7 @@ class Message(Thread):
         system = self.cls.main_system
         session = system.db_session.create_session()
         if self.user is None:
-            self.user = system.db_session.User(self.userid, 'vk', 0)
+            self.user = system.db_session.User(self.userid, self.wtype, 0)
             session.add(self.user)
             session.commit()
             self.send(

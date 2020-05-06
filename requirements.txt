@@ -1,0 +1,9 @@
+SQLAlchemy
+SpeechRecognition
+acrcloud
+beautifulsoup4
+gtts
+pymorphy2
+vk
+wikipedia
+wolframalpha

@@ -20,7 +20,10 @@ class DataBaseSession:
         class User(self.SqlAlchemyBase):
             __tablename__ = 'users'
 
-            id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+            table_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                         primary_key=True,
+                                         autoincrement=True)
+            id = sqlalchemy.Column(sqlalchemy.Integer)
             type = sqlalchemy.Column(sqlalchemy.String)
             level = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 

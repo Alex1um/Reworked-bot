@@ -1,11 +1,8 @@
-import os
 from Core.core import Chat, Message, ChatSystem
 import vk
 import requests
-import time
 from types import *
 from typing import *
-import re
 
 
 class VK(Chat):
@@ -16,7 +13,6 @@ class VK(Chat):
     api_version = 0.
     msg_id = 0
     vk_api_user = 'api'
-    find_id = re.compile(r'\[id(\d+)\|@\w+]')
 
     def input(self, res, id):
         try:
