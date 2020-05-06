@@ -79,7 +79,8 @@ def dothis(message):
         return args
 
     words = []
-    with open(fr"{os.getcwd()}\\commands\\files\\{salades_file}.saladict", 'rb') as f:
+    with open(f"{os.getcwd()}\\commands\\"
+              f"files\\{salades_file}.saladict", 'rb') as f:
         words = load(f)
     if salades_set is None:
         salades = [sample(words, randint(4, salades_max)),

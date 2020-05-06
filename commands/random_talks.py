@@ -26,7 +26,7 @@ def table_file(params, system: ChatSystem, message):
         elif params:
             name = params[0]
             if param == 'add':
-                open(fr'commands\\files\\{name}.table', 'w')
+                open(f'commands\\files\\{name}.table', 'w')
                 value = name
             elif param == 'switch':
                 if name in map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
@@ -35,8 +35,8 @@ def table_file(params, system: ChatSystem, message):
                 else:
                     return 'Файл не найден'
             elif param == 'rename':
-                os.rename(rf'commands\\files\\{value}.table',
-                          rf'commands\\files\\{name}.table')
+                os.rename(f'commands\\files\\{value}.table',
+                          f'commands\\files\\{name}.table')
                 value = name
         else:
             return "недостаточно параметров"
@@ -74,7 +74,7 @@ def dothis(message):
     tr_file = message.get_setting(session, 'random_talks_file')
     file = tr_file.value if tr_file else 'youtube'
     try:
-        with open(rf"commands\\files\\{file}.table", 'rb') as f:
+        with open(f"commands\\files\\{file}.table", 'rb') as f:
             w_table = pickle.load(f)
     except Exception as f:
         return str(f)
@@ -120,7 +120,7 @@ def update_table(message):
     file = tr_file.value if tr_file else 'youtube'
     if sett is None:
         try:
-            with open(rf"commands\\files\\{file}.table", 'rb') as f:
+            with open(f"commands\\files\\{file}.table", 'rb') as f:
                 w_table = pickle.load(f)
         except EOFError:
             w_table = dict()
@@ -146,7 +146,7 @@ def update_table(message):
                     w_table[w].extend(n)
                 else:
                     w_table[w] = n
-        with open(fr"commands\\files\\{file}.table", 'wb') as f:
+        with open(f"commands\\files\\{file}.table", 'wb') as f:
             pickle.dump(w_table, f)
 
 
