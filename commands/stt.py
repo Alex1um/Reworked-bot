@@ -55,19 +55,22 @@ def dothis(message):
             ans += "Произошла непредвиденная ошибка: " + str(f) + "\n"
         finally:
             if current_cmd:
-                session.delete(current_cmd)
-                session.commit()
+                message.delete_active(session)
+                # session.delete(current_cmd)
+                # session.commit()
             yield str(ans)
     elif '-exit' in message.params and current_cmd:
-        session.delete(current_cmd)
-        session.commit()
+        message.delete_active(session)
+        # session.delete(current_cmd)
+        # session.commit()
     else:
         if current_cmd is None:
-            session.add(system.db_session.Settings(
-                message.userid,
-                'active',
-                system.defaut_command_symbols[0] + "stt"))
-            session.commit()
+            message.add_setting(session, 'active', 'stt')
+            # session.add(system.db_session.Settings(
+            #     message.userid,
+            #     'active',
+            #     system.defaut_command_symbols[0] + "stt"))
+            # session.commit()
         yield 'Прикрепите аудио или напишите -exit'
 
 
