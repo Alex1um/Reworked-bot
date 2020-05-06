@@ -14,7 +14,8 @@ def permissions(params, system: ChatSystem, message):
             params[0]) if params[0] != 'self' and params[
             0].isdigit() else message.userid
         other = system.db_session.create_session().query(
-            system.db_session.User).get(otherid)
+            system.db_session.User).filter(
+            system.db_session.User.id == message.userid).first()
         if other:
             if len(params) > 1 and params[1].isdigit():
                 other.level = int(params[1])
