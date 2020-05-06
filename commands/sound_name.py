@@ -54,7 +54,7 @@ def dothis(message):
             raise f
         finally:
             if current_cmd:
-                message.delete_active()
+                message.delete_active(session)
             yield str(ans)
     elif '-exit' in message.params and current_cmd:
         session.delete(current_cmd)

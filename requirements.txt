@@ -6,4 +6,3 @@ gtts
 pymorphy2
 vk
 wikipedia
-wolframalpha
