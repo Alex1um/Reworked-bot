@@ -54,16 +54,13 @@ def dothis(message):
             raise f
         finally:
             if current_cmd:
-                session.delete(current_cmd)
-                session.commit()
+                message.delete_active()
             yield str(ans)
     elif '-exit' in message.params and current_cmd:
         session.delete(current_cmd)
-        session.commit()
     else:
         if current_cmd is None:
             message.add_setting(session, 'active', 'name')
-            session.commit()
         yield 'Прикрепите аудио или напишите -exit'
 
 

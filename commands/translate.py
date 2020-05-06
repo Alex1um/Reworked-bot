@@ -26,7 +26,7 @@ def dothis(message):
     def code(message, dd, mode):
         if mode == 'en':  # кодирование
             message = message.upper()
-            message = message.replace(' ', '%321')  # кодирование символов, используемых в морзе
+            message = message.replace(' ', '%321')  # кодирование символов
             message = message.replace('-', '—')
             message = message.replace('.', '...... ')
             message = message.replace('%321', '-...- ')

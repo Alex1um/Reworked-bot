@@ -105,8 +105,7 @@ def dothis(message):
             tmp_name = f"temp\\{str(time.time())}.tmpmp3"
             gtts.gTTS(res, lang='ru').save(tmp_name)
 
-            attach = message.cls.upload_doc(tmp_name,
-                                            message.sendid, 'audio_message')
+            attach = message.cls.upload_doc(tmp_name, 'audio_message')
             os.remove(tmp_name)
             if '?notext' in message.special_params:
                 res = None

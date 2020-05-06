@@ -20,6 +20,17 @@ class ChatSystem:
     def __init__(self, modules: Dict[str, str], db_file=None,
                  default_command_symbols=("!", "test>"),
                  mode: Union['full', 'commands', None]="commands"):
+        """
+        Initialising all commands and data base
+
+        :param modules: Dictionary of modules - Path: files or @all for all
+        files with !file for exclude files
+        :param db_file: path for database file may be None
+        :param default_command_symbols: default symbols to invoke most commands
+        :param mode: initialising mode:
+        'full' - for delete database;
+        'commands' - for save users and their settings;
+        """
         self.defaut_command_symbols = default_command_symbols
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
@@ -43,6 +54,13 @@ class ChatSystem:
             action(self)
 
     def load_modules(self, dirs, init=True):
+        '''
+        loading modules with import and execute main function
+
+        :param dirs: Paths for files
+        :param init: Add new commands?
+        :return:
+        '''
         session = self.db_session.create_session()
         currentdir = os.path.abspath(os.curdir)
         for dir in dirs.keys():
@@ -88,6 +106,11 @@ class ChatSystem:
         os.chdir(currentdir)
 
     def exit(self):
+        '''
+        Uses exit functions for commands
+
+        :return:
+        '''
         for command in self.EXITS:
             try:
                 command(self)
@@ -95,6 +118,12 @@ class ChatSystem:
                 pass
 
     def clear_database(self, table):
+        '''
+        delete all values in column
+
+        :param table: table for delete
+        :return:
+        '''
         session = self.db_session.create_session()
         if table:
             for user in session.query(table):
@@ -110,6 +139,12 @@ class ChatSystem:
         return self.ACTIVE_ACTIONS[command_name](message)
 
     def getcommand(self, value):
+        '''
+        getting command name with sql;
+
+        :param value: activation command(may be)
+        :return:
+        '''
         session = self.db_session.create_session()
         v = " " + value + " "
         k = session.query(self.db_session.CommandTable).filter(
@@ -119,6 +154,12 @@ class ChatSystem:
         return None
 
     def get_command_symbol(self, text):
+        '''
+        symbol before command
+
+        :param text:
+        :return:
+        '''
         for i in self.defaut_command_symbols:
             if text[:len(i)] == i:
                 return i
@@ -126,6 +167,12 @@ class ChatSystem:
             return None
 
     def valid(self, text):
+        '''
+        Is this command?
+
+        :param text: message
+        :return:
+        '''
         command_symbol = self.get_command_symbol(text)
         if command_symbol is not None:
             value = text[len(command_symbol):text.find(' ') if text.find(
@@ -136,6 +183,10 @@ class ChatSystem:
 
 
 class Chat(Thread):
+    '''
+    Default struct for chat
+
+    '''
 
     def __init__(self, main_system: ChatSystem):
         super().__init__()
@@ -151,33 +202,28 @@ class Chat(Thread):
         pass
 
 
-class Settings:
-    random_talks_file = 'Trash'
-    random_talks_enable = False
-    level = 0
-    salades_file = 'food'
-    salades_max_in_row = 6
-    ai_enabled = True
-
-    def __init__(self):
-        self.random_talks_enable = False
-        self.level = 0
-
-
 class Message(Thread):
-    wtype = ''
-    command = ''
-    msg_id = 0
+    wtype = ''  # chat type
+    command = ''  # command name
+    msg_id = 0  # message id
     sendid = ''
-    userid = 0
-    msg = ''
-    date = ''
-    text = ''
-    cls = None
-    attachments = dict()
-    sym = ''
+    userid = 0  # sender id
+    msg = ''  # message text
+    date = ''  # message date
+    text = ''  # message text without command
+    cls = None  # system class
+    attachments = dict()  # photos, audios...
+    sym = ''  # symbol before command
 
     def __init__(self, _type, id, text, cls: Chat):
+        """
+
+
+        :param _type: Chat type
+        :param id: message id
+        :param text: - send text
+        :param cls: - Chat type
+        """
         system: ChatSystem = cls.main_system
         session = system.db_session.create_session()
         Thread.__init__(self)
@@ -282,7 +328,11 @@ class Message(Thread):
         session.commit()
 
     def delete_active(self, session):
-        session.delete(self.get_setting(session, 'active'))
+        self.delete_setting(session, 'active')
+        session.commit()
+
+    def delete_setting(self, session, setting: str):
+        session.delete(self.get_setting(session, setting))
         session.commit()
 
     def get_session(self):

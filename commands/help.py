@@ -2,6 +2,12 @@ from Core.core import ChatSystem
 
 
 def dothis(message):
+    """
+    Help function
+    :param message: Message type
+    :return: command help or list of commands with short help
+    making query to sql to get all commands
+    """
     system: ChatSystem = message.cls.main_system
     session = system.db_session.create_session()
     params = message.msg.split()
@@ -17,7 +23,7 @@ def dothis(message):
         if cmd:
             mreturn = cmd.help
         else:
-            mreturn = 'No command'
+            mreturn = 'Команда не найдена'
     else:
         mreturn = '\n'.join(
             map(

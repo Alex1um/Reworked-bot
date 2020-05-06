@@ -6,7 +6,6 @@ import os
 
 
 def salades_op(params, system: ChatSystem, message):
-    print('asdddddddddddddddddddd')
     session = system.db_session.create_session()
     salades_file = message.get_setting(session, 'salades_file')
 
