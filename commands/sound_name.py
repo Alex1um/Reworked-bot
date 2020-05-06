@@ -65,7 +65,7 @@ def dothis(message):
     else:
         if current_cmd is None:
             message.add_setting(session, 'active', 'name')
-        yield 'Прикрепите аудио или напишите -exit'
+        yield 'Прикрепите аудио или напишите Выход для выхода'
 
 
 def main():
@@ -73,7 +73,9 @@ def main():
             "name",
             dothis,
             "name\n"
-            "Найти назваине песни. Нужно прикрепить аудио",
+            "Найти назваине песни.\n"
+            "Для работы нужно прикрепить аудио - голосовое сообщение или"
+            " музыкальный файл",
             0,
             None,
             "Найти название песни"), None, None
