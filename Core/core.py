@@ -12,6 +12,13 @@ def nothing(*chat, **kwargs):
     pass
 
 
+def fix_paths(paths: Sized):
+    new_paths = []
+    for path in paths:
+        new_paths.append(path.replace('\\', '/'))
+    return new_paths
+
+
 class ChatSystem:
     system_id = 0
     ACTIVE_ACTIONS = dict()

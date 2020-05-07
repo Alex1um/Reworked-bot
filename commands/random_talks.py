@@ -1,4 +1,4 @@
-from Core.core import ChatSystem
+from Core.core import ChatSystem, fix_paths
 import glob
 import random
 import pickle
@@ -21,16 +21,16 @@ def table_file(params, system: ChatSystem, message):
         elif param == 'current':
             return value if value else 'youtube'
         elif param == 'list':
-            return '\n'.join(map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
-                                 glob.glob("commands/files/*.table")))
+            return '\n'.join(map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+                                 fix_paths(glob.glob("commands/files/*.table"))))
         elif params:
             name = params[0]
             if param == 'add':
                 open(f'commands/files/{name}.table', 'w')
                 value = name
             elif param == 'switch':
-                if name in map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
-                               glob.glob("commands/files/*.table")):
+                if name in map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+                               fix_paths(glob.glob("commands/files/*.table"))):
                     value = name
                 else:
                     return 'Файл не найден'
