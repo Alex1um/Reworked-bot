@@ -49,8 +49,7 @@ class ChemicalEquations:
         req = 'https://chemiday.com/search/'
         params = {"q": reaction,
                   "m": "board"}
-
-        res = session.get(req, params)
+        res = session.get(req, params=params)
         res.encoding = 'utf-8'
         parsed = bs(res.content, 'html.parser')
         print('parsed!')
