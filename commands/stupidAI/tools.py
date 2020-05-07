@@ -44,21 +44,19 @@ class ChemicalEquations:
         :param reaction:
         :return: link for image
         """
-        session = requests.session()
-        session.trust_env = False
         req = 'https://chemiday.com/search/'
         params = {"q": reaction,
                   "m": "board"}
-        res = session.get(req, params=params)
+
+        res = requests.get(req, params)
         res.encoding = 'utf-8'
         parsed = bs(res.content, 'html.parser')
-        print('parsed!')
-        # img = parsed.find("img", {"alt": "Реакция"})
+        img = parsed.find("img", {"alt": "Реакция"})
         addit = parsed.find("div", {'class': "rus"})
-        return addit.contents[0]['href'] if addit else None
+        return ("https://chemiday.com" + img['src'], addit.contents[0]['href']) if img and addit else (None, None)
 
 
-# print(ChemicalEquations.solve_equation('Hcl+Naoh'))
+# print(ChemicalEquations.solve_equation2('Hcl+Naoh'))
 # print(ChemicalEquations.is_equation("Сделай это: H2SO4 + NaOH"))
 # print(1)
 # print(ChemicalEquations.is_equation("вот уравнение: nacl+AgNO3"))
