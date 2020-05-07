@@ -1,37 +1,36 @@
 from Core.core import *
 from commands.stupidAI.tools import ChemicalEquations as Ce
 from bs4 import BeautifulSoup as bs
-from PIL import Image
-import io
 import requests
-import tempfile
+import re
+
+
+index_dict = {'0': '₀',
+              '1': '₁',
+              '2': '₂',
+              '3': '₃',
+              '4': '₄',
+              '5': '₅',
+              '6': '₆',
+              '7': '₇',
+              '8': '₈',
+              '9': '₉'}
 
 
 def dothis(msg: Message):
     img, url = Ce.solve_equation(Ce.is_equation(msg.text))
-    if img and url:
-        session = requests.session()
-        session.trust_env = False
-        ff = session.get(img)
-        img = Image.open(io.BytesIO(ff.content))
-        w, h = img.size
-        if w / h < 20:
-            hn = w // 20 + 20
-            a = Image.new('RGB', (w, hn), (255, 255, 255))
-            a.paste(img, (0, (hn - h) // 2))
-            img = a
-        f = tempfile.NamedTemporaryFile(
-            dir='temp/', suffix='.png', delete=False,)
-        f.close()
-        img.save(f.name, 'PNG')
-        photo = msg.cls.upload_photo(f.name, msg.userid)
-        os.remove(f.name)
-        res = session.get(url)
-        res.encoding = 'utf-8'
-        text = bs(res.content, 'html.parser').find(
-            'div', {'class': 'reactBody'}).contents[0].strip()
-        print(text, photo)
-        return text, photo
+
+    if url:
+        # ff = session.get(img)
+        # img = Image.open(io.BytesIO(ff.content))
+        page = requests.get(url)
+        page.encoding = 'utf-8'
+        parsed = bs(page.content, 'html.parser')
+        text = parsed.find('div', {'class': 'reactBody'}).contents[0].strip()
+        equation = repr(parsed.find('div', {'class': 'reacth2'}).contents[0])[4:-5]
+        for k, v in index_dict.items():
+            equation = equation.replace(f'<sub>{k}</sub>', v)
+        return text + '\n' + equation
     else:
         return 'Реакции не найдено'
 

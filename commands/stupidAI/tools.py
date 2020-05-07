@@ -56,6 +56,7 @@ class ChemicalEquations:
         return ("https://chemiday.com" + img['src'], addit.contents[0]['href']) if img and addit else (None, None)
 
 
+print(ChemicalEquations.solve_equation('Hcl+Naoh'))
 # print(ChemicalEquations.is_equation("Сделай это: H2SO4 + NaOH"))
 # print(1)
 # print(ChemicalEquations.is_equation("вот уравнение: nacl+AgNO3"))
