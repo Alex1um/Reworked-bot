@@ -54,8 +54,9 @@ def dothis(message):
     salades_max = int(salades_max.value) if salades_max else 6
     salades_set = message.get_setting(session, 'salades')
     active = message.get_setting(session, 'active')
-    if active and '-exit' in message.params:
+    if active and 'Выход' in message.params:
         message.delete_active(session)
+        return {'msg': 'Успешно!', 'keyboard': [[], False]}
     elif active is None:
         message.add_setting(session, 'active', 'salades')
 
@@ -75,7 +76,6 @@ def dothis(message):
             args[i] = sample(
                 e, randint(le // 2 + 1, le)
             ) + sample(words, randint(0, salades_max - le))
-        print(args, '---------------------')
         return args
 
     words = []
@@ -89,7 +89,7 @@ def dothis(message):
         message.add_setting(session, 'salades', str(salades))
     else:
         salades = literal_eval(salades_set.value)
-    if message.params:
+    if message.params and message.params[0].isdigit():
         kill = int(message.params[0])
         salades.pop(kill - 1)
         salades = conc(*salades)
@@ -100,9 +100,10 @@ def dothis(message):
             str(n + 1) + '.' + str(
                 salad
             )[1:-1].replace("'", '') for n, salad in enumerate(salades)))
-    return 'Ваша задача получить лечший по вашему мнению салатик.\n' \
-           'Для этого выберите(напишите) номер худшего салатика.\n' \
-           '(или напишите Выход для выхода из игры)\n\n' + ans
+    return {'msg': 'Ваша задача получить лечший по вашему мнению салатик.\n'
+                   'Для этого выберите(напишите) номер худшего салатика.\n'
+                   '(или напишите Выход для выхода из игры)\n\n' + ans,
+            'keyboard': [[['1', '2', '3'], [('Выход', 'negative')]], False]}
 
 
 def main():

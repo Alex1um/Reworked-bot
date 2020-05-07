@@ -3,6 +3,7 @@ import vk
 import requests
 from types import *
 from typing import *
+import json
 
 
 class VK(Chat):
@@ -208,5 +209,27 @@ class VK(Chat):
                                                    v=self.api_version)[0]
         return f"photo{doc['owner_id']}_{doc['id']}"
 
-    def make_keyboard(self, buttons):
-        pass
+    @staticmethod
+    def make_keyboard(button_names: List[List[Tuple[str, str] or str]],
+                      one_time=True):
+        res = dict()
+        res['one_time'] = one_time
+        buttons = []
+        for rows in button_names:
+            row = []
+            for item in rows:
+                if isinstance(item, tuple):
+                    button = {
+                        'action': {'type': 'text',
+                                   'label': item[0]},
+                        'color': item[1]
+                    }
+                else:
+                    button = {
+                        'action': {'type': 'text',
+                                   'label': item},
+                    }
+                row.append(button)
+            buttons.append(row)
+        res['buttons'] = buttons
+        return json.dumps(res)

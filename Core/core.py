@@ -271,6 +271,9 @@ class Message(Thread):
             self.params.remove(param)
         # print(self.special_params, self.params)
 
+    def make_keyboard(self):
+        pass
+
     def run(self):
         system = self.cls.main_system
         session = system.db_session.create_session()
@@ -320,8 +323,8 @@ class Message(Thread):
                               self.msg_id,
                               attachment=msg['attachment'] if
                               'attachment' in msg.keys() else None,
-                              keyboard=msg['keyboard'] if
-                              'keyboard' in msg.keys() else None
+                              keyboard=self.cls.make_keyboard(*msg['keyboard'])
+                              if 'keyboard' in msg.keys() else None
                               )
             else:
                 self.cls.send(msg, self.sendid, self.msg_id)
