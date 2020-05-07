@@ -35,13 +35,13 @@ def salades_op(params, system: ChatSystem, message):
         return file if file else 'food'
     elif prev_param == 'switch' and params:
         if params[0] in map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
-                            fix_path(glob.glob("commands/files/*.saladict"))):
+                            fix_paths(glob.glob("commands/files/*.saladict"))):
             file = params[0]
         else:
             return 'Файл не найден'
     elif prev_param == 'list':
         return '\n'.join(map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
-                             fix_path(glob.glob("commands/files/*.saladict"))))
+                             fix_paths(glob.glob("commands/files/*.saladict"))))
     elif prev_param == 'default':
         session.delete(salades_file)
         file = None
