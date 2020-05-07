@@ -18,8 +18,7 @@ index_dict = {'0': '₀',
 
 
 def dothis(msg: Message):
-    img, url = Ce.solve_equation(Ce.is_equation(msg.text))
-
+    url = Ce.solve_equation(Ce.is_equation(msg.text))
     if url:
         # ff = session.get(img)
         # img = Image.open(io.BytesIO(ff.content))

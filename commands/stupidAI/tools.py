@@ -51,12 +51,12 @@ class ChemicalEquations:
         res = requests.get(req, params)
         res.encoding = 'utf-8'
         parsed = bs(res.content, 'html.parser')
-        img = parsed.find("img", {"alt": "Реакция"})
+        # img = parsed.find("img", {"alt": "Реакция"})
         addit = parsed.find("div", {'class': "rus"})
-        return ("https://chemiday.com" + img['src'], addit.contents[0]['href']) if img and addit else (None, None)
+        return addit.contents[0]['href'] if addit else None
 
 
-print(ChemicalEquations.solve_equation('Hcl+Naoh'))
+# print(ChemicalEquations.solve_equation('Hcl+Naoh'))
 # print(ChemicalEquations.is_equation("Сделай это: H2SO4 + NaOH"))
 # print(1)
 # print(ChemicalEquations.is_equation("вот уравнение: nacl+AgNO3"))
