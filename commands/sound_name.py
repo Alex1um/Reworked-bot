@@ -60,12 +60,15 @@ def dothis(message):
             if current_cmd:
                 message.delete_active(session)
             yield str(ans)
-    elif '-exit' in message.params and current_cmd:
+    elif 'Выход' in message.params and current_cmd:
         session.delete(current_cmd)
+        return {'msg': 'Успешно!', 'keyboard': [[], False]}
     else:
         if current_cmd is None:
             message.add_setting(session, 'active', 'name')
-        yield 'Прикрепите аудио или напишите Выход для выхода'
+        yield {'msg': 'Прикрепите аудио или напишите Выход',
+               'keyboard': [[[('Выход', 'negative')]], False]
+               }
 
 
 def main():
@@ -76,6 +79,6 @@ def main():
             "Найти назваине песни.\n"
             "Для работы нужно прикрепить аудио - голосовое сообщение или"
             " музыкальный файл",
-            0,
+            1,
             None,
             "Найти название песни"), None, None

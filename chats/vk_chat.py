@@ -45,24 +45,37 @@ class VK(Chat):
                                           keyboard=keyboard
                                           )  # sending message
             elif isinstance(text, GeneratorType):
-                a = True
+                first = True
                 for msg in text:
-                    if a:
+                    if isinstance(msg, tuple):
+                        answer, attachment = msg
+                    elif isinstance(msg, dict):
+                        k = msg.keys()
+                        answer = msg['msg'] if 'msg' in k else '...'
+                        attachment = msg['attachment'] if \
+                            'attachment' in k else None
+                        keyboard = msg['keyboard'] if 'keyboard' in k else None
+                    else:
+                        answer = msg
+                    if first:
                         outid = self.vk_api.messages.send(peer_id=id,
-                                                          message=msg,
+                                                          message=answer,
                                                           v=self.api_version,
                                                           random_id=rid,
                                                           attachment=attachment,
-                                                          keyboard=keyboard
+                                                          keyboard=self.
+                                                          make_keyboard(
+                                                              *keyboard
+                                                          )
                                                           )  # sending message
-                        a = False
+                        first = False
                     else:
                         self.vk_api.messages.edit(
                             peer_id=id,
                             message=msg,
                             v=self.api_version,
                             message_id=outid,
-                            attachment=attachment)
+                            attachment=attachment,)
 
     def __init__(self, token, _group_id, v, main_system: ChatSystem):
         super().__init__(main_system)
@@ -212,6 +225,8 @@ class VK(Chat):
     @staticmethod
     def make_keyboard(button_names: List[List[Tuple[str, str] or str]],
                       one_time=True):
+        if button_names is None:
+            return None
         res = dict()
         res['one_time'] = one_time
         buttons = []

@@ -33,7 +33,8 @@ def dothis(message):
                         message.add_setting(session,
                                             'active',
                                             'set' + new_bar.strip())
-                    return new_bar + '\n' + ans[0]
+                    return {'msg': new_bar + '\n' + ans[0],
+                            'keyboard': [[[('Выход', 'negative')]], False]}
                 else:
                     message.delete_active(session)
                     return {'msg': ans[0], 'keyboard': [[]]}
@@ -66,7 +67,7 @@ def main():
             'set | settings {предложанный вариант}\n'
             'Настройки\n'
             'После каждого ввода команды, вам предлагаются варианты. '
-            'Для выбора варианта введите команд'
+            'Для выбора варианта введите этот вариант'
             'у и один из вариантов через пробел. '
             'Чтобы вернуться к первоначальному выбору настроек, '
             'введите команду set без параметров',

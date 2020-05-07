@@ -18,7 +18,6 @@ def dothis(message):
     #     system.db_session.Settings).filter(
     #     (system.db_session.Settings.user_id == message.userid) &
     #     (system.db_session.Settings.name == "active")).first()
-    print(message.attachments)
     if message.attachments['sound']:
         try:
             r = Recognizer()
@@ -59,8 +58,9 @@ def dothis(message):
                 # session.delete(current_cmd)
                 # session.commit()
             yield str(ans)
-    elif '-exit' in message.params and current_cmd:
+    elif 'Выход' in message.params and current_cmd:
         message.delete_active(session)
+        return {'msg': 'Успешно!', 'keyboard': [[], False]}
         # session.delete(current_cmd)
         # session.commit()
     else:
@@ -71,7 +71,9 @@ def dothis(message):
             #     'active',
             #     system.defaut_command_symbols[0] + "stt"))
             # session.commit()
-        yield 'Прикрепите аудио или напишите -exit'
+        yield {'msg': 'Прикрепите аудио или напишите Выход',
+               'keyboard': [[[('Выход', 'negative')]], False]
+               }
 
 
 def main():

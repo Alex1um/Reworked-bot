@@ -18,7 +18,8 @@ def dothis(msg: Message):
             a = Image.new('RGB', (w, hn), (255, 255, 255))
             a.paste(img, (0, (hn - h) // 2))
             img = a
-        f = tempfile.NamedTemporaryFile(dir='temp\\', suffix='.png', delete=False,)
+        f = tempfile.NamedTemporaryFile(
+            dir='temp\\', suffix='.png', delete=False,)
         f.close()
         img.save(f.name, 'PNG')
         photo = msg.cls.upload_photo(f.name, msg.userid)
@@ -42,6 +43,6 @@ def main():
             ' по реагентам или продуктам\n'
             'Например при вводе реакции {HCl + NaOH}, выведеться\n'
             '{HCl + NaOH = NaCl + H2O}',
-            0,
+            1,
             None,
             'решение химических уравнений'), None, None
