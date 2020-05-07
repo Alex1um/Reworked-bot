@@ -21,7 +21,7 @@ def table_file(params, system: ChatSystem, message):
         elif param == 'current':
             return value if value else 'youtube'
         elif param == 'list':
-            return '\n'.join(map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+            return '\n'.join(map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
                                  glob.glob("commands/files/*.table")))
         elif params:
             name = params[0]
@@ -29,7 +29,7 @@ def table_file(params, system: ChatSystem, message):
                 open(f'commands/files/{name}.table', 'w')
                 value = name
             elif param == 'switch':
-                if name in map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+                if name in map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
                                glob.glob("commands/files/*.table")):
                     value = name
                 else:
@@ -39,9 +39,9 @@ def table_file(params, system: ChatSystem, message):
                           f'commands/files/{name}.table')
                 value = name
         else:
-            return "недостаточно параметров"
+            return "недостаточно параметров", False
     else:
-        return 'Нет параметров. Введите нежный параметр'
+        return 'Нет параметров. Введите нежный параметр', False
     if value:
         if tr_file:
             tr_file.value = value
@@ -66,7 +66,7 @@ def enable_record(params, system: ChatSystem, message):
             return 'False' if sett else 'True'
         session.commit()
         return 'Success'
-    return "недостаточно параметров"
+    return "недостаточно параметров", False
 
 
 def dothis(message):
@@ -161,11 +161,7 @@ def main():
                 'list': (table_file, 0),
                 'rename': (table_file, 5)},
             'record': {  # for record
-                '1': (enable_record, 0),
                 'True': (enable_record, 0),
-                'yes': (enable_record, 0),
-                '0': (enable_record, 10),
-                'no': (enable_record, 0),
                 'False': (enable_record, 0),
                 'current': (enable_record, 0)}}}
     return ("random_talk",

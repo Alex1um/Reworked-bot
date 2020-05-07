@@ -71,8 +71,6 @@ def main():
         'enable_stupid_ai': {
             'True': (sett, 0),
             'False': (sett, 0),
-            '0': (sett, 0),
-            '1': (sett, 1),
             'current': (sett, 0)
         }}
     return (

@@ -5,6 +5,26 @@ from ast import literal_eval
 import os
 
 
+def salades_max(params, system: ChatSystem, message):
+    session = system.db_session.create_session()
+    salades_max = message.get_setting(session, 'salades_max')
+    prev_param = message.params[-1]
+    if prev_param == 'get':
+        return salades_max.value if salades_max else '4'
+    elif prev_param == 'set':
+        if params:
+            if params[0] != '4' and params[0].isdigit():
+                if salades_max is None:
+                    message.add_setting(session, 'salades_max', params[0])
+                else:
+                    salades_max.value = int(params[0])
+                    session.commit()
+            else:
+                return "Неправильный параметр", False
+        else:
+            return "Нехватает параметра", False
+
+
 def salades_op(params, system: ChatSystem, message):
     session = system.db_session.create_session()
     salades_file = message.get_setting(session, 'salades_file')
@@ -14,27 +34,18 @@ def salades_op(params, system: ChatSystem, message):
     if prev_param == 'current':
         return file if file else 'food'
     elif prev_param == 'switch' and params:
-        if params[0] in map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+        if params[0] in map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
                             glob.glob("commands/files/*.saladict")):
             file = params[0]
         else:
             return 'Файл не найден'
     elif prev_param == 'list':
-        return '\n'.join(map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+        return '\n'.join(map(lambda x: x[x.rfind('\\') + 1:x.rfind('.'):],
                              glob.glob("commands/files/*.saladict")))
     elif prev_param == 'default':
         session.delete(salades_file)
         file = None
-    elif prev_param == 'max':
-        salades_max = message.get_setting(session, 'salades_max')
 
-        if params and params[0] != '4' and params[0].isdigit():
-            if salades_max is None:
-                message.add_setting(session, 'salades_max', params[0])
-            else:
-                salades_max.value = int(params[0])
-        else:
-            return salades_max.value if salades_max else '4'
     if file:
         if salades_file:
             salades_file.value = file
@@ -113,7 +124,12 @@ def main():
                 'current': (salades_op, 0),
                 'switch': (salades_op, 5),
                 'list': (salades_op, 0)},
-            'max': (salades_op, 5)}}
+            'max': {
+                'get': (salades_max, 0),
+                'set': (salades_max, 5),
+            }
+        }
+    }
     return (
         'salades',
         'salades',
