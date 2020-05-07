@@ -11,6 +11,7 @@ def dothis(message):
     system: ChatSystem = message.cls.main_system
     session = system.db_session.create_session()
     params = message.msg.split()
+    mreturn = ""
     if len(params) > 1:
         if params[1].isdigit():
             index = int(params[1])
@@ -25,7 +26,10 @@ def dothis(message):
         else:
             mreturn = 'Команда не найдена'
     else:
-        mreturn = '\n'.join(
+        mreturn = 'Для вывода подробной информации, ' \
+                  'напишите номер или название команды после help\n' \
+                  'Список доступных команд:\n'
+        mreturn += '\n'.join(
             map(
                 lambda x: f"{x[0]} - {x[1].name}" + (
                     (" - " + x[1].short_help) if x[1].short_help else ""),
