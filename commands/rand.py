@@ -17,7 +17,7 @@ def dothis(message):
         'random': lambda x=None, y=None: random.random()
     }
     p = message.params
-    mode = p[0] if len(p) > 0 and p in situations.keys() else 'i'
+    mode = p[0] if len(p) > 0 and p[0] in situations.keys() else 'i'
     if mode in array_calls:
         return str(situations[mode](p[1::]))
     else:
