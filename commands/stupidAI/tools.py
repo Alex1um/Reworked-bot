@@ -44,13 +44,16 @@ class ChemicalEquations:
         :param reaction:
         :return: link for image
         """
+        session = requests.session()
+        session.trust_env = False
         req = 'https://chemiday.com/search/'
         params = {"q": reaction,
                   "m": "board"}
 
-        res = requests.get(req, params)
+        res = session.get(req, params)
         res.encoding = 'utf-8'
         parsed = bs(res.content, 'html.parser')
+        print('parsed!')
         # img = parsed.find("img", {"alt": "Реакция"})
         addit = parsed.find("div", {'class': "rus"})
         return addit.contents[0]['href'] if addit else None

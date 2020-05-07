@@ -2,7 +2,6 @@ from Core.core import *
 from commands.stupidAI.tools import ChemicalEquations as Ce
 from bs4 import BeautifulSoup as bs
 import requests
-import re
 
 
 index_dict = {'0': '₀',
