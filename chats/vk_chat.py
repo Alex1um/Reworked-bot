@@ -79,8 +79,8 @@ class VK(Chat):
 
     def __init__(self, token, _group_id, v, main_system: ChatSystem):
         super().__init__(main_system)
-        self.group_id = _group_id  # for group bots
-        self.api_version = v  # api
+        self.group_id = int(_group_id)  # for group bots
+        self.api_version = float(v)  # api
         self.vk_api = vk.API(vk.Session(access_token=token))  # setting vk api
         self.get_server()
 

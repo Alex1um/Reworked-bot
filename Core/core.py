@@ -29,7 +29,8 @@ class ChatSystem:
 
     def __init__(self, modules: Dict[str, str], db_file=None,
                  default_command_symbols=("!", "test>"),
-                 mode: Union['full', 'commands', None]="commands"):
+                 mode: Union['full', 'commands', None]="commands",
+                 update_status=0):
         """
         Initialising all commands and data base
 
@@ -41,6 +42,7 @@ class ChatSystem:
         'full' - for delete database;
         'commands' - for save users and their settings;
         """
+        self.update_status = float(update_status)
         self.defaut_command_symbols = default_command_symbols
         self.system_id = ChatSystem.system_id
         ChatSystem.system_id += 1
@@ -70,13 +72,13 @@ class ChatSystem:
             action(self)
 
     def load_modules(self, dirs, init=True):
-        '''
+        """
         loading modules with import and execute main function
 
         :param dirs: Paths for files
         :param init: Add new commands?
         :return:
-        '''
+        """
         session = self.db_session.create_session()
         currentdir = os.path.abspath(os.curdir)
         for dir in dirs.keys():
@@ -170,13 +172,13 @@ class ChatSystem:
             return k
         return None
 
-    def get_command_symbol(self, text):
-        '''
+    def get_command_symbol(self, text: str) -> Optional[str]:
+        """
         symbol before command
 
         :param text:
         :return:
-        '''
+        """
         for i in self.defaut_command_symbols:
             if text[:len(i)] == i:
                 return i
@@ -184,12 +186,12 @@ class ChatSystem:
             return None
 
     def valid(self, text):
-        '''
+        """
         Is this command?
 
         :param text: message
         :return:
-        '''
+        """
         command_symbol = self.get_command_symbol(text)
         if command_symbol is not None:
             value = text[len(command_symbol):text.find(' ') if text.find(
@@ -204,12 +206,22 @@ class Chat(Thread):
     Default struct for chat
 
     '''
+    id = 0
     find_id = re.compile(r'\[id(\d+)\|@\w+]')
 
-
     def __init__(self, main_system: ChatSystem):
+        self.id = Chat.id
+        Chat.id += 1
         super().__init__()
         self.main_system = main_system
+        if main_system.update_status:
+            schedule.every(main_system.update_status).minutes.do(
+                self.update_status
+            )
+
+    def update_status(self):
+        with open(f'./status/{self.id}.status', 'w') as f:
+            f.write(str(time.time()))
 
     def send(self):
         pass
