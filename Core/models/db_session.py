@@ -7,7 +7,12 @@ import sqlalchemy.ext.declarative as dec
 class DataBaseSession:
     __factory = None
 
-    def __init__(self, db_file):
+    def __init__(self, db_file: str):
+        """
+        Connecting with sql database. Creating session owned classes to
+        avoid global vars
+        :param db_file: path to sql file
+        """
         self.SqlAlchemyBase = dec.declarative_base()
 
         if not db_file or not db_file.strip():
@@ -18,6 +23,10 @@ class DataBaseSession:
         print(f"Подключение к базе данных по адресу {conn_str}")
 
         class User(self.SqlAlchemyBase):
+            """
+            User class with id in table; id in chat; chat type and permission
+            level
+            """
             __tablename__ = 'users'
 
             table_id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -33,6 +42,16 @@ class DataBaseSession:
                 self.permission_level = permission_level
 
         class CommandTable(self.SqlAlchemyBase):
+            """
+            Table for commands:
+            activates - string with keys to run commands
+            name - command name. used as key in dict of commands
+            level - required permission level to run command
+            command_symbol - symbol to run command
+            help - command description
+            shot_help - short command description. Appears in the list
+            of all commands
+            """
             __tablename__ = 'commands'
 
             # id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -61,6 +80,9 @@ class DataBaseSession:
                 self.short_help = short_help
 
         class Settings(self.SqlAlchemyBase):
+            """
+            Additional table with settings. Uses by commands to store vars.
+            """
             __tablename__ = 'settings'
 
             set_id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -84,8 +106,6 @@ class DataBaseSession:
         self.__factory = orm.sessionmaker(bind=self.engine)
 
         self.SqlAlchemyBase.metadata.create_all(self.engine)
-
-
 
     def create_session(self) -> Session:
         return self.__factory()

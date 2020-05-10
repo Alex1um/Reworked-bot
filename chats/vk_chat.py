@@ -16,6 +16,12 @@ class VK(Chat):
     vk_api_user = 'api'
 
     def input(self, res, id):
+        """
+        catch messages from response
+        :param res: json response from long poll server
+        :param id: message id
+        :return:
+        """
         try:
             if res is None or len(
                     res['updates']) == 0:  # checking for right response
@@ -33,6 +39,15 @@ class VK(Chat):
             self.get_server()  # if error
 
     def send(self, res, id, rid, attachment=None, keyboard=None):
+        """
+        sending message to user depending on the type returned by the command
+        :param res: returned by command
+        :param id: from user id
+        :param rid: to user id
+        :param attachment: attachments
+        :param keyboard: keyboard if available
+        :return:
+        """
         if not isinstance(res, (tuple, list)):
             res = [res]
         for text in res:
@@ -44,7 +59,7 @@ class VK(Chat):
                                           attachment=attachment,
                                           keyboard=keyboard
                                           )  # sending message
-            elif isinstance(text, GeneratorType):
+            elif isinstance(text, GeneratorType):  # generator type - edit
                 first = True
                 for msg in text:
                     if isinstance(msg, tuple):
@@ -78,18 +93,34 @@ class VK(Chat):
                             attachment=attachment,)
 
     def __init__(self, token, _group_id, v, main_system: ChatSystem):
+        """
+        initialising Vk chat
+        :param token: Group token to use group features
+        :param _group_id: group id
+        :param v: api version
+        :param main_system: ChatSystem class
+        """
         super().__init__(main_system)
         self.group_id = int(_group_id)  # for group bots
         self.api_version = float(v)  # api
         self.vk_api = vk.API(vk.Session(access_token=token))  # setting vk api
         self.get_server()
 
-    def get_server(self):
+    def get_server(self) -> None:
+        """
+        Getting long poll server
+        :return: Nothing
+        """
         self.LPS = self.vk_api.groups.getLongPollServer(
             group_id=self.group_id,
             v=self.api_version)  # getting server
 
     def send_requsest(self, ts):
+        """
+        sending requests to long poll server and getting updates
+        :param ts: send id
+        :return:
+        """
         link = f'{self.LPS["server"]}?act=a_ch' \
                f'eck&key={self.LPS["key"]}&ts={ts}&wait=25'  # setting link
         res = requests.post(link).json()  # response
@@ -100,6 +131,10 @@ class VK(Chat):
         return res
 
     def run(self):
+        """
+        getting updates from long poll serer and make message
+        :return:
+        """
         while 1:
             try:  # for 'None' answer
                 res = self.send_requsest(self.LPS['ts'])  # first request
@@ -112,6 +147,12 @@ class VK(Chat):
                 print(f)
 
     def message_parse(self, res):
+        """
+        parsing input message to dict.
+        Available recursion for forward messages
+        :param res: input message as json(dict)
+        :return:
+        """
         r_msg = ''
         r_userid = res['object']['message']['from_id']  # who send
         session = self.main_system.db_session.create_session()
@@ -199,7 +240,14 @@ class VK(Chat):
                 'attachments': r_attachments,
                 'userid': r_userid}
 
-    def upload_doc(self, dir, from_id, type: 'audio_message' or 'doc'):
+    def upload_doc(self, dir, from_id, type: "audio_message" or 'doc') -> str:
+        """
+        Upload document
+        :param dir: update from..
+        :param from_id: user/chat id to upload file
+        :param type: document type
+        :return: string to pull with return message
+        """
         pfile = requests.post(
             self.vk_api.docs.getMessagesUploadServer(
                 type=type,
@@ -225,6 +273,15 @@ class VK(Chat):
     @staticmethod
     def make_keyboard(button_names: List[List[Tuple[str, str] or str]],
                       one_time=True):
+        """
+        making keyboard with buttons
+        max allow 40 buttons: 6 in row;
+        10 in col
+        :param button_names: List of rows with buttons
+        button: tuple of label(and send message) and color or only name
+        :param one_time: save keyboard
+        :return:
+        """
         if button_names is None:
             return None
         res = dict()

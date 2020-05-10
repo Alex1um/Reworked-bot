@@ -3,11 +3,18 @@ import datetime
 
 
 class SimpleChat(Chat):
+    """
+    Chat from input
+    """
 
     def __init__(self, main_system=ChatSystem):
         super().__init__(main_system)
 
     def run(self):
+        """
+        Just make message from input()
+        :return:
+        """
         msgid = 0
         while True:
             msg = input()
@@ -16,12 +23,32 @@ class SimpleChat(Chat):
                 msgid += 1
 
     def send(self, res, id, rid, attachment=None, keyboard=None):
+        """
+        print returned text
+        :param res: command return text
+        :param id: message id
+        :param rid: send id
+        :param attachment: attachments but not working there
+        :param keyboard: Chat keyboard if available
+        :return:
+        """
         if not isinstance(res, (tuple, list)):
             res = [res]
         for text in res:
             print(text)
 
     def message_parse(self, res):
+        """
+        Parsing input message
+        :param res: input text
+        :return: Dict:
+        'msg': full message without edit
+        'date': message date
+        'sendid' send to
+        'type': chat type
+        'attachments': attachments
+        'userid': from user
+        """
         r_msg = ''
         r_msg = res
         r_date = datetime.datetime.now()

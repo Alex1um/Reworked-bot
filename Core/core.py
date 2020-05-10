@@ -351,7 +351,7 @@ class Message(Thread):
                     pass
             # self.cls.send('Wrong', self.sendid, self.msg_id)
 
-    def send(self, msg: Union[str, Tuple, Dict, List, Iterator]):
+    def send(self, msg: Union[str, Tuple, Dict, List, Generator]):
         """
         sends messages depending on its type
         :param msg: Return of command
