@@ -78,3 +78,6 @@ class SimpleChat(Chat):
                 'type': r_ctype,
                 'attachments': r_attachments,
                 'userid': r_userid}
+
+    def make_keyboard(self, *args, **kwargs):
+        return None

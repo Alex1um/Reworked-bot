@@ -72,7 +72,7 @@ class ChatSystem:
         self.reload()
         Thread(target=self.shedule_run).start()
 
-    def shedule_run(self) -> NoReturn:
+    def shedule_run(self) -> None:
         """
         Function to update schedule
 
@@ -91,7 +91,7 @@ class ChatSystem:
         for action in self.ON_LOAD:
             action(self)
 
-    def load_modules(self, dirs, init=True) -> NoReturn:
+    def load_modules(self, dirs, init=True) -> None:
         """
         loading modules with import and execute their main function
 
@@ -143,7 +143,7 @@ class ChatSystem:
         session.commit()
         os.chdir(currentdir)
 
-    def exit(self) -> NoReturn:
+    def exit(self) -> None:
         """
         Running exit functions for commands
         :return:
@@ -154,7 +154,7 @@ class ChatSystem:
             except Exception:
                 pass
 
-    def clear_database(self, table) -> NoReturn:
+    def clear_database(self, table) -> None:
         """
         delete all values in column
 
