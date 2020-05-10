@@ -12,7 +12,12 @@ def nothing(*chat, **kwargs):
     pass
 
 
-def fix_paths(paths: Sized):
+def fix_paths(paths: List[str]) -> List[str]:
+    """
+    Making path for linux and windows
+    :param paths: List of paths
+    :return: edited list of paths
+    """
     new_paths = []
     for path in paths:
         new_paths.append(path.replace('\\', '/'))
@@ -20,6 +25,9 @@ def fix_paths(paths: Sized):
 
 
 class ChatSystem:
+    """
+    Class to control all chats
+    """
     system_id = 0
     ACTIVE_ACTIONS = dict()
     PASSIVE_ACTIONS = list()
@@ -34,6 +42,8 @@ class ChatSystem:
         """
         Initialising all commands and data base
 
+        :type 'full': str
+        :type 'commands': str
         :param modules: Dictionary of modules - Path: files or @all for all
         files with !file for exclude files
         :param db_file: path for database file may be None
@@ -62,18 +72,28 @@ class ChatSystem:
         self.reload()
         Thread(target=self.shedule_run).start()
 
-    def shedule_run(self):
+    def shedule_run(self) -> NoReturn:
+        """
+        Function to update schedule
+
+        TODO: Need to put on level up
+        :return: Nothing
+        """
         while 1:
             schedule.run_pending()
             time.sleep(1)
 
-    def reload(self):
+    def reload(self) -> None:
+        """
+        run all functions on load
+        :return: None
+        """
         for action in self.ON_LOAD:
             action(self)
 
-    def load_modules(self, dirs, init=True):
+    def load_modules(self, dirs, init=True) -> NoReturn:
         """
-        loading modules with import and execute main function
+        loading modules with import and execute their main function
 
         :param dirs: Paths for files
         :param init: Add new commands?
@@ -123,32 +143,31 @@ class ChatSystem:
         session.commit()
         os.chdir(currentdir)
 
-    def exit(self):
-        '''
-        Uses exit functions for commands
-
+    def exit(self) -> NoReturn:
+        """
+        Running exit functions for commands
         :return:
-        '''
+        """
         for command in self.EXITS:
             try:
                 command(self)
-            except Exception as f:
+            except Exception:
                 pass
 
-    def clear_database(self, table):
-        '''
+    def clear_database(self, table) -> NoReturn:
+        """
         delete all values in column
 
         :param table: table for delete
         :return:
-        '''
+        """
         session = self.db_session.create_session()
         if table:
             for user in session.query(table):
                 session.delete(user)
             session.commit()
         else:
-            meta =self.db_session.SqlAlchemyBase.metadata
+            meta = self.db_session.SqlAlchemyBase.metadata
             for table in reversed(meta.sorted_tables):
                 session.execute(table.delete())
             session.commit()
@@ -156,13 +175,13 @@ class ChatSystem:
     def invoke_command(self, message, command_name: str) -> str and list:
         return self.ACTIVE_ACTIONS[command_name](message)
 
-    def getcommand(self, value):
-        '''
+    def getcommand(self, value) -> Optional:
+        """
         getting command name with sql;
 
         :param value: activation command(may be)
         :return:
-        '''
+        """
         session = self.db_session.create_session()
         v = " " + value + " "
         k = session.query(self.db_session.CommandTable).filter(
@@ -174,7 +193,7 @@ class ChatSystem:
 
     def get_command_symbol(self, text: str) -> Optional[str]:
         """
-        symbol before command
+        find symbol before command
 
         :param text:
         :return:
@@ -202,14 +221,17 @@ class ChatSystem:
 
 
 class Chat(Thread):
-    '''
+    """
     Default struct for chat
-
-    '''
+    """
     id = 0
     find_id = re.compile(r'\[id(\d+)\|@\w+]')
 
     def __init__(self, main_system: ChatSystem):
+        """
+        Initialising with setting id and schedule to update status
+        :param main_system: class of ChatSystem
+        """
         self.id = Chat.id
         Chat.id += 1
         super().__init__()
@@ -219,7 +241,11 @@ class Chat(Thread):
                 self.update_status
             )
 
-    def update_status(self):
+    def update_status(self) -> None:
+        """
+        Updating status by writing time to file
+        :return: Nothing
+        """
         with open(f'./status/{self.id}.status', 'w') as f:
             f.write(str(time.time()))
 
@@ -248,8 +274,7 @@ class Message(Thread):
 
     def __init__(self, _type, id, text, cls: Chat):
         """
-
-
+        Parsing text and making Message
         :param _type: Chat type
         :param id: message id
         :param text: - send text
@@ -277,8 +302,7 @@ class Message(Thread):
 
         self.sym = system.get_command_symbol(self.msg)
         self.command = system.getcommand(
-            self.msg[
-            len(self.sym):self.msg.find(
+            self.msg[len(self.sym):self.msg.find(
                 ' ') if self.msg.find(
                 ' ') != -1 else None]) if self.sym is not None else None
         self.cls: Chat = cls
@@ -290,10 +314,12 @@ class Message(Thread):
             self.params.remove(param)
         # print(self.special_params, self.params)
 
-    def make_keyboard(self):
-        pass
-
-    def run(self):
+    def run(self) -> None:
+        """
+        Getting user and adding to database
+        run passive actions if command is not found
+        :return: None
+        """
         system = self.cls.main_system
         session = system.db_session.create_session()
         if self.user is None:
@@ -321,11 +347,16 @@ class Message(Thread):
                 try:
                     ans = action(self)
                     self.send(ans)
-                except Exception as f:
+                except Exception:
                     pass
             # self.cls.send('Wrong', self.sendid, self.msg_id)
 
-    def send(self, msg):
+    def send(self, msg: Union[str, Tuple, Dict, List, Iterator]):
+        """
+        sends messages depending on its type
+        :param msg: Return of command
+        :return: Nothing
+        """
         if msg is not None:
             if isinstance(msg, tuple):
                 self.cls.send(msg[0] if msg[0] else '...',
@@ -348,18 +379,34 @@ class Message(Thread):
             else:
                 self.cls.send(msg, self.sendid, self.msg_id)
 
-    def get_setting(self, session, setting: str):
+    def get_setting(self, session, setting: str) -> Optional:
+        """
+        Getting setting from sql with given name
+        :param session: database session
+        :param setting: setting name
+        :return: Founded sqlalchemy type
+        """
         return session.query(
             self.cls.main_system.db_session.Settings
         ).filter(
             (
-                    self.cls.main_system.db_session.Settings.user_id == self.userid
+                    self.cls.main_system.
+                    db_session.Settings.user_id == self.userid
             ) & (
                     self.cls.main_system.db_session.Settings.name == setting
             )
         ).first()
 
-    def add_setting(self, session, setting, value=None):
+    def add_setting(self, session, setting: str, value: Optional[str] = None):
+        """
+        Adding setting to sql settings table
+        if setting is active:
+        put default command setting before value
+        :param session:
+        :param setting:
+        :param value:
+        :return:
+        """
         session.add(
             self.cls.main_system.db_session.Settings(
                 self.userid,
@@ -369,13 +416,28 @@ class Message(Thread):
         )
         session.commit()
 
-    def delete_active(self, session):
+    def delete_active(self, session) -> None:
+        """
+        delete active setting
+        :param session: sqlalchemy sesion
+        :return:
+        """
         self.delete_setting(session, 'active')
         session.commit()
 
     def delete_setting(self, session, setting: str):
+        """
+        Delete setting with given name
+        :param session:
+        :param setting:
+        :return:
+        """
         session.delete(self.get_setting(session, setting))
         session.commit()
 
     def get_session(self):
+        """
+        Getting sqlalchemy session
+        :return:
+        """
         return self.cls.main_system.db_session.create_session()

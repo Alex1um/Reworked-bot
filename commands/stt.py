@@ -9,15 +9,9 @@ witkey = 'GQ2ITHTRXYD2WVOPYOZ3AEY3NRBLNIS3'
 
 
 def dothis(message):
-    # system: ChatSystem = message.cls.main_system
-    # session = system.db_session.create_session()
     session = message.get_session()
     ans = ''
     current_cmd = message.get_setting(session, 'active')
-    # current_cmd = session.query(
-    #     system.db_session.Settings).filter(
-    #     (system.db_session.Settings.user_id == message.userid) &
-    #     (system.db_session.Settings.name == "active")).first()
     if message.attachments['sound']:
         try:
             r = Recognizer()
@@ -55,14 +49,10 @@ def dothis(message):
         finally:
             if current_cmd:
                 message.delete_active(session)
-                # session.delete(current_cmd)
-                # session.commit()
             yield str(ans)
     elif 'Выход' in message.params and current_cmd:
         message.delete_active(session)
-        return {'msg': 'Успешно!', 'keyboard': [[], False]}
-        # session.delete(current_cmd)
-        # session.commit()
+        yield {'msg': 'Успешно!', 'keyboard': [[], False]}
     else:
         if current_cmd is None:
             message.add_setting(session, 'active', 'stt')
