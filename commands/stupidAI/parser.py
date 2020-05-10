@@ -9,11 +9,28 @@ import re
 
 analyzer = MorphAnalyzer()
 signs = re.compile(r'[!?,.]')
-translit = {'shh': 'щ', 'jo': 'ё', 'yo': 'ё', 'zh': 'ж', 'ch': 'ч', 'sh': 'ш', '##': 'ъ', 'tz': 'ъ', 'mz': 'ь', 'je': 'э', 'ju': 'ю', 'yu': 'ю', 'ja': 'я', 'ya': 'я', 'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'e': 'е', 'z': 'з', 'i': 'и', 'j': 'й', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о', 'p': 'п', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'f': 'ф', 'x': 'х', 'h': 'х', 'c': 'ц', 'w': 'щ', '/': 'ъ', '#': 'ъ', 'y': 'ы', '"': 'ь', "'": 'ь', 'q': 'я'}
-error = {'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 'г', 'i': 'ш', 'o': 'щ', 'p': 'з', '[': 'х', ']': 'ъ', 'a': 'ф', 's': 'ы', 'd': 'в', 'f': 'а', 'g': 'п', 'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д', ';': 'ж', "'": 'э', 'z': 'я', 'x': 'ч', 'c': 'с', 'v': 'м', 'b': 'и', 'n': 'т', 'm': 'ь', ',': 'б', '.': 'ю', '`': 'ё'}
+translit = {'shh': 'щ', 'jo': 'ё', 'yo': 'ё', 'zh': 'ж', 'ch': 'ч', 'sh': 'ш',
+            '##': 'ъ', 'tz': 'ъ', 'mz': 'ь', 'je': 'э', 'ju': 'ю', 'yu': 'ю',
+            'ja': 'я', 'ya': 'я', 'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г',
+            'd': 'д', 'e': 'е', 'z': 'з', 'i': 'и', 'j': 'й', 'k': 'к',
+            'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о', 'p': 'п', 'r': 'р',
+            's': 'с', 't': 'т', 'u': 'у', 'f': 'ф', 'x': 'х', 'h': 'х',
+            'c': 'ц', 'w': 'щ', '/': 'ъ', '#': 'ъ', 'y': 'ы', '"': 'ь',
+            "'": 'ь', 'q': 'я'}
+error = {'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 'г',
+         'i': 'ш', 'o': 'щ', 'p': 'з', '[': 'х', ']': 'ъ', 'a': 'ф', 's': 'ы',
+         'd': 'в', 'f': 'а', 'g': 'п', 'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д',
+         ';': 'ж', "'": 'э', 'z': 'я', 'x': 'ч', 'c': 'с', 'v': 'м', 'b': 'и',
+         'n': 'т', 'm': 'ь', ',': 'б', '.': 'ю', '`': 'ё'}
 
 
-def from_translit(word: str, trs: dict = translit):
+def from_translit(word: str, trs: dict = translit) -> str:
+    """
+    translate word
+    :param word:
+    :param trs: dict of translation
+    :return: formatted word
+    """
     i = 0
     formated = ''
     ll = len(word)
@@ -34,7 +51,12 @@ def from_translit(word: str, trs: dict = translit):
 
 # print(from_translit('ty zhopa'))
 # print(from_translit('ты молодец, а я нет privet'))
-def sent_correction(string: str):
+def sent_correction(string: str) -> str:
+    """
+    correct sentence
+    :param string: sentence
+    :return: corrected sentence
+    """
     corrected = ''
     for word in string.split():
         parsed = analyzer.parse(from_translit(word))
@@ -51,6 +73,11 @@ def sent_correction(string: str):
 
 
 def normalize_sent(string: str) -> str:
+    """
+    correction of incorrect words
+    :param string: sentence
+    :return: corrected sentence
+    """
     try:
         self_string = signs.sub('', string)
     except re.error:
@@ -63,6 +90,11 @@ def normalize_sent(string: str) -> str:
 
 
 def alternative_analyzer(sent: str) -> dict:
+    """
+    analysing centence
+    :param sent: input text
+    :return: dict of action
+    """
     parsed = {'subject': [],
               'predicate': [],
               'addition': [],
@@ -75,7 +107,8 @@ def alternative_analyzer(sent: str) -> dict:
     print(tags)
     for i in range(len(sent.split())):
         if words[i] in {'-', '—'} and parsed['subject']:
-            parsed['predicate'].extend([(words[j], tags[j]) for j in range(i + 1, len(words))])
+            parsed['predicate'].extend(
+                [(words[j], tags[j]) for j in range(i + 1, len(words))])
         if tags[i].POS == 'NOUN':  # существительное
             if tags[i].case == 'nomn':
                 parsed['subject'].append((words[i], tags[i]))
@@ -103,7 +136,8 @@ def alternative_analyzer(sent: str) -> dict:
 
 def get_info(word: str, addition=None) -> (str, bool):
     wikipedia.set_lang('ru' if word[0] not in ascii_lowercase else 'en')
-    res = wikipedia.search(word if addition is None else word + ' ' + addition, results=1)
+    res = wikipedia.search(
+        word if addition is None else word + ' ' + addition, results=1)
     if res:
         try:
             return wikipedia.summary(res[0]), 'acpt'
@@ -112,6 +146,12 @@ def get_info(word: str, addition=None) -> (str, bool):
 
 
 def parse2(string: str, string2: str = None):
+    """
+    another sentence parser
+    :param string: sentence
+    :param string2:
+    :return:
+    """
     res = ''
     parsed = alternative_analyzer(string.lower())
     # print(parsed)
@@ -132,20 +172,27 @@ def parse2(string: str, string2: str = None):
                 return 'solve_chemical', 'invoke'
                 # stat = 'acpt'
                 # return Ce.solve_equation(eq), stat
-        elif parsed['predicate'][0][0] in {'скажи', 'напиши'} and parsed['subject']:
+        elif parsed['predicate'][0][0] in {'скажи',
+                                           'напиши'} and parsed['subject']:
             print(2)
-            req = ' '.join(i[0] for i in parsed['subject'] if i[1].POS not in {'CONJ'})  # получить информаци.
+            req = ' '.join(i[0] for i in parsed[
+                'subject'] if i[1].POS not in {'CONJ'})  # получить информаци.
             res, stat = get_info(req, string2)
-        elif parsed['predicate'][0][0] in {'выбери', 'скажи'} and bool(parsed['subject']):
+        elif parsed['predicate'][0][0] in {'выбери',
+                                           'скажи'} and bool(parsed['subject']):
             print(3)
-            return 'я думаю ' + str(random.choice(tuple(map(lambda x: x[0], parsed['subject'] + parsed['addition'])))), 'acpt'
+            return 'я думаю ' + str(random.choice(
+                tuple(map(lambda x: x[0], parsed[
+                    'subject'] + parsed['addition'])))), 'acpt'
         elif parsed['predicate'][0][0] in {'переведи'}:
             print(4)
             return 'speech_to_text', 'invoke'
         elif parsed['predicate'][0][0] in {'распознай'}:
             print(5)
             return 'sound_name', 'invoke'
-    elif parsed['predicate'] and parsed['predicate'][0][0] in {'происходит'} and parsed['addition'][0][0] in {'мире'} or parsed['addition'][0][0] in {'новости'}:
+    elif parsed['predicate'] and parsed['predicate'][0][0] in\
+            {'происходит'} and parsed['addition'][0][0] in {'мире'} or\
+            parsed['addition'][0][0] in {'новости'}:
         print(6)
         return 'get_news', 'invoke'
     return res, stat

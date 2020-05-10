@@ -2,7 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def parse_triberkomo():
+def parse_triberkomo() -> set:
+    """
+    Parsing site triberkomo
+    :return: set of news
+    """
     res = requests.get(r'http://triberkomo.ru/')
     res.encoding = 'utf-8'
     titles = BeautifulSoup(res.content, 'html.parser').findAll('div', {
@@ -12,10 +16,15 @@ def parse_triberkomo():
         item.contents[1].get_text().lower()), titles))
 
 
-def parse_yandex():
+def parse_yandex() -> set:
+    """
+    Parsing site yandex
+    :return: set of news
+    """
     res = requests.get(r'https://yandex.ru/news')
     res.encoding = 'utf-8'
-    titles = BeautifulSoup(res.content, 'html.parser').findAll('div', {'class': 'story story_view_short story_notags'})
+    titles = BeautifulSoup(res.content, 'html.parser').findAll('div', {
+        'class': 'story story_view_short story_notags'})
     ans = set()
     for obj in titles:
         title_date = obj.find('div', {'class': 'story__date'}).text.split()
@@ -28,14 +37,12 @@ def parse_yandex():
     return ans
 
 
-def apply_news(struct: set):
+def apply_news(struct: set) -> None:
+    """
+    apply parsed news to set
+    :param struct:
+    :return: None
+    """
     struct |= parse_yandex()
     struct |= parse_triberkomo()
     print('News updated!')
-
-
-# print(parse_yandex())
-# print(parse_triberkomo())
-# a = set()
-# apply_news(a)
-# print(a)
