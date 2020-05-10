@@ -9,6 +9,11 @@ witkey = 'GQ2ITHTRXYD2WVOPYOZ3AEY3NRBLNIS3'
 
 
 def dothis(message):
+    """
+    From speech to text
+    :param message:
+    :return: text
+    """
     session = message.get_session()
     ans = ''
     current_cmd = message.get_setting(session, 'active')
@@ -56,11 +61,6 @@ def dothis(message):
     else:
         if current_cmd is None:
             message.add_setting(session, 'active', 'stt')
-            # session.add(system.db_session.Settings(
-            #     message.userid,
-            #     'active',
-            #     system.defaut_command_symbols[0] + "stt"))
-            # session.commit()
         yield {'msg': 'Прикрепите аудио или напишите Выход',
                'keyboard': [[[('Выход', 'negative')]], False]
                }

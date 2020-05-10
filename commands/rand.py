@@ -3,6 +3,11 @@ import random
 
 
 def dothis(message):
+    """
+    Some random functions
+    :param message:
+    :return: random function return
+    """
     array_calls = ('ar', 'array', 'shuffle')
     situations = {
         'int': lambda x, y: random.randint(x, y),

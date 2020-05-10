@@ -6,6 +6,13 @@ import os
 
 
 def salades_max(params, system: ChatSystem, message):
+    """
+    Control max length
+    :param params:
+    :param system:
+    :param message:
+    :return:
+    """
     session = system.db_session.create_session()
     salades_max = message.get_setting(session, 'salades_max')
     prev_param = message.params[-1]
@@ -26,6 +33,13 @@ def salades_max(params, system: ChatSystem, message):
 
 
 def salades_op(params, system: ChatSystem, message):
+    """
+    Control file
+    :param params:
+    :param system:
+    :param message:
+    :return:
+    """
     session = system.db_session.create_session()
     salades_file = message.get_setting(session, 'salades_file')
 
@@ -58,6 +72,11 @@ def salades_op(params, system: ChatSystem, message):
 
 
 def dothis(message):
+    """
+    salad game with genetic algorithm
+    :param message:
+    :return:
+    """
     session = message.get_session()
     salades_file = message.get_setting(session, 'salades_file')
     salades_file = salades_file.value if salades_file else 'food'

@@ -2,8 +2,21 @@ import pickle
 
 
 def dothis(message):
+    """
+    Function to translate text
+    :param message:
+    :return: translated text
+    """
 
     def replace(lst1, lst2, text, a=True):
+        """
+        function to replace symbols
+        :param lst1: keys
+        :param lst2: values
+        :param text: sentence
+        :param a: - replace all symbols
+        :return:
+        """
         text = text.strip().lower()
         res = [0] * len(text)
         i = 0
@@ -24,6 +37,13 @@ def dothis(message):
         return ''.join(filter(lambda x: x != 0, res))
 
     def code(message, dd, mode):
+        """
+        code morse
+        :param message:
+        :param dd: dict of symbols
+        :param mode: decode or encode
+        :return:
+        """
         if mode == 'en':  # кодирование
             message = message.upper()
             message = message.replace(' ', '%321')  # кодирование символов
@@ -37,11 +57,11 @@ def dothis(message):
             message = message.replace('•', '.').replace('−', '-')
             if message[-1] != ' ':
                 message += ' '
-            message = message.replace('...... ', '%3213')  # символы используемые в морзе
+            message = message.replace('...... ', '%3213')  # уже используются
             message = message.replace('-...- ', '%111')
             for k, v in dd.items():  # все символы
                 message = message.replace(v, k)
-            message = message.replace('%3213', '.')  # символы используемые в морзе
+            message = message.replace('%3213', '.')  # уже используются
             message = message.replace('%111', ' ')
             return message.lower()
 
@@ -50,16 +70,31 @@ def dothis(message):
         try:
             if p[0] == 'er':
                 return replace(
-                    ('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', "o", 'p', '[', ']', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.'),
-                    ('й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю'), ' '.join(p[1::]), False)
+                    ('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', "o", 'p', '[',
+                     ']', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+                     "'", 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.'),
+                    ('й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х',
+                     'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж',
+                     'э', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б',
+                     'ю'), ' '.join(p[1::]), False)
             elif p[0] == 'tr1':
                 return replace(
-                    ('sh', "sh", 'ch', 'ja', "'u", "'", 'y', 'u', 'k', 'e', 'n', 'g', 'z', 'h', "'", 'f', 'i', 'v', 'a', 'p', 'r', 'o', 'l', 'd', 'j', "e", 's', 'm', 'i', 't', 'b',  'c'),
-                    ('ш',  'щ',  'ч',  'я',  'ю',  'ь', 'й', 'у', 'к', 'е', 'н', 'г', 'з', 'х', 'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'с', 'м', 'и', 'т', 'б',  'ц'), ' '.join(p[1::]))
+                    ('sh', "sh", 'ch', 'ja', "'u", "'", 'y', 'u', 'k', 'e',
+                     'n', 'g', 'z', 'h', "'", 'f', 'i', 'v', 'a', 'p', 'r',
+                     'o', 'l', 'd', 'j', "e", 's', 'm', 'i', 't', 'b',  'c'),
+                    ('ш',  'щ',  'ч',  'я',  'ю',  'ь', 'й', 'у', 'к', 'е',
+                     'н', 'г', 'з', 'х', 'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р',
+                     'о', 'л', 'д', 'ж', 'э', 'с', 'м', 'и', 'т', 'б',
+                     'ц'), ' '.join(p[1::]))
             elif p[0] == 'tr2':
                 return replace(
-                    ("'a", "'u", 'y', 'c', 'u', 'k', 'e', 'n', 'g', 'w', "w", 'z', 'h', "'", 'f', 'i', 'v', 'a', 'p', 'r', 'o', 'l', 'd', 'j', "e", '4', 's', 'm', 'i', 't', "'", 'b'),
-                    ('я',  'ю',  'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б'), ' '.join(p[1::]))
+                    ("'a", "'u", 'y', 'c', 'u', 'k', 'e', 'n', 'g', 'w', "w",
+                     'z', 'h', "'", 'f', 'i', 'v', 'a', 'p', 'r', 'o', 'l',
+                     'd', 'j', "e", '4', 's', 'm', 'i', 't', "'", 'b'),
+                    ('я',  'ю',  'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ',
+                     'з', 'х', 'ъ', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л',
+                     'д', 'ж', 'э', 'ч', 'с', 'м', 'и', 'т', 'ь',
+                     'б'), ' '.join(p[1::]))
             elif p[0] == 'morse':
                 if p[1] in {'rus', 'eng'}:
                     if p[2] in {'en', 'de'}:

@@ -4,9 +4,15 @@ morph = pymorphy2.MorphAnalyzer()
 
 
 def asd(message):
+    """
+    Testing generators - count Pallas's cats
+    :param message:
+    :return: count and Pallas's caat
+    """
     if message.params[0] != 'test':
         for i in range(int(message.params[0])):
-            yield str(i) + ' ' + morph.parse('манул')[0].make_agree_with_number(i).word
+            yield str(i) + ' ' + morph.parse(
+                'манул')[0].make_agree_with_number(i).word
             time.sleep(0.5)
     else:
         try:
@@ -21,8 +27,11 @@ def asd(message):
             #                                    title='test',
             #                                    v=message.cls.api_version)
             # print(3)
-            # return 'Do not play thiz', f'doc{doc["audio_message"]["owner_id"]}_{doc["audio_message"]["id"]}' #doc['audio_message']
-            attach = message.cls.upload_doc('1.mp3', message.sendid, 'audio_message')
+            # return 'Do not play thiz', f'doc{doc[
+            # "audio_message"]["owner_id"]}_{doc[
+            # "audio_message"]["id"]}' #doc['audio_message']
+            attach = message.cls.upload_doc('1.mp3',
+                                            message.sendid, 'audio_message')
             return 'hello', attach
         except FileNotFoundError:
             print('not found')

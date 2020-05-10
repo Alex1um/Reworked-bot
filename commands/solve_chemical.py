@@ -8,6 +8,11 @@ import io
 
 
 def dothis(msg: Message):
+    """
+    Solve chemical equation - make full equation
+    :param msg:
+    :return: full equation
+    """
     img, url = Ce.solve_equation(Ce.is_equation(msg.text))
     if img and url:
         ff = requests.get(img)

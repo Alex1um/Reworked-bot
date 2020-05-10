@@ -7,8 +7,18 @@ from ast import literal_eval
 # init
 # getting news from yandex and triberkomo
 def update_news(system: ChatSystem):
+    """
+    Function to update news with schedule
+    :param system:
+    :return:
+    """
 
     def update(system):
+        """
+        update news as schedule function
+        :param system:
+        :return:
+        """
         session = system.db_session.create_session()
         for sett in session.query(system.db_session.Settings).filter(
                 system.db_session.Settings.name == 'news'):
@@ -24,7 +34,12 @@ def update_news(system: ChatSystem):
 # init
 
 
-def dothis(message):
+def dothis(message) -> str:
+    """
+    chooses news with tag and used news
+    :param message:
+    :return: news
+    """
     system: ChatSystem = message.cls.main_system
     session = system.db_session.create_session()
     was = message.get_setting(session, 'news')

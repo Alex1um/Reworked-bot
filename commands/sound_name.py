@@ -18,6 +18,11 @@ acrcloud = ACRCloudRecognizer(config)
 
 
 def dothis(message):
+    """
+    get sound name with acrcloud
+    :param message:
+    :return: possible song names
+    """
     session = message.get_session()
     ans = ''
     current_cmd = message.get_setting(session, 'active')

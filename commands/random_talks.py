@@ -10,6 +10,13 @@ import os
 
 
 def table_file(params, system: ChatSystem, message):
+    """
+    Setting to control random_talks file
+    :param params: not setting params
+    :param system:
+    :param message:
+    :return: answer to a request
+    """
     session = message.get_session()
     tr_file = message.get_setting(session, 'random_talks_file')
     value = tr_file.value if tr_file else None
@@ -21,8 +28,10 @@ def table_file(params, system: ChatSystem, message):
         elif param == 'current':
             return value if value else 'youtube'
         elif param == 'list':
-            return '\n'.join(map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
-                                 fix_paths(glob.glob("commands/files/*.table"))))
+            return '\n'.join(
+                map(lambda x: x[x.rfind('/') + 1:x.rfind('.'):],
+                    fix_paths(glob.glob("commands/files/*.table")))
+            )
         elif params:
             name = params[0]
             if param == 'add':
@@ -52,6 +61,13 @@ def table_file(params, system: ChatSystem, message):
 
 
 def enable_record(params, system: ChatSystem, message):
+    """
+
+    :param params:
+    :param system:
+    :param message:
+    :return:
+    """
     session = message.get_session()
     sett = message.get_setting(session, 'random_talks_disable')
     param = message.params[-1]
@@ -70,6 +86,11 @@ def enable_record(params, system: ChatSystem, message):
 
 
 def dothis(message):
+    """
+    Make random sentence from special file
+    :param message:
+    :return: random sentence
+    """
     session = message.get_session()
     tr_file = message.get_setting(session, 'random_talks_file')
     file = tr_file.value if tr_file else 'youtube'
@@ -114,6 +135,12 @@ def dothis(message):
 
 
 def update_table(message):
+    """
+    parse string and update file
+    can be disabled
+    :param message:
+    :return:
+    """
     session = message.get_session()
     tr_file = message.get_setting(session, 'random_talks_file')
     sett = message.get_setting(session, 'random_talks_disable')

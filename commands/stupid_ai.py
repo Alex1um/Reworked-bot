@@ -3,6 +3,13 @@ from commands.stupidAI import parser
 
 
 def sett(params, system: ChatSystem, message):
+    """
+    Control work
+    :param params:
+    :param system:
+    :param message:
+    :return:
+    """
     param = message.params[-1]
     print(param)
     if param:
@@ -31,21 +38,16 @@ def sett(params, system: ChatSystem, message):
 
 
 def analyze(message):
+    """
+    Use commands based on input sentence
+    :param message:
+    :return:
+    """
     session = message.get_session()
-    # system: ChatSystem = message.cls.main_system
-    # session = system.db_session.create_session()
     enable = message.get_setting(session, 'stupid_ai')
-    # enable = session.query(
-    #         system.db_session.Settings).filter(
-    #         (system.db_session.Settings.user_id == message.userid) &
-    #         (system.db_session.Settings.name == 'stupid_ai')).first() is None
     print(enable)
     if enable:
-        # try:
         active_command = message.get_setting(session, 'active')
-        # active_command = session.query(system.db_session.Settings).filter(
-        #     (system.db_session.Settings.user_id == message.userid) &
-        #     (system.db_session.Settings.name == 'active')).first()
         if active_command:
             ans, stat = parser.parse2(parser.normalize_sent(message.msg))
             if stat == 'acpt':
@@ -62,8 +64,6 @@ def analyze(message):
                 return ans
             elif stat == 'invoke':
                 return message.cls.main_system.invoke_command(message, ans)
-        # except Exception as f:
-        #     print('ERROR >>', f)
 
 
 def main():

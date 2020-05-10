@@ -2,6 +2,11 @@ from Core.core import *
 
 
 def dothis(message):
+    """
+    Function to allow commands to use settings
+    :param message:
+    :return: current setting with answer options
+    """
     system: ChatSystem = message.cls.main_system
     session = message.get_session()
     status = message.get_setting(session, 'active')
@@ -56,10 +61,6 @@ def dothis(message):
              [('Выход', 'negative')]], False]}
 
 
-def exitf(chat_system: ChatSystem):
-    chat_system.db_session.create_session().commit()
-
-
 def main():
     return ("settings",
             "set settings",
@@ -73,4 +74,4 @@ def main():
             'введите команду set без параметров',
             0,
             None,
-            "Настройки"), (None, exitf, None), None
+            "Настройки"), None, None
