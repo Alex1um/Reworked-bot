@@ -1,3 +1,11 @@
-# Reworked bot system
-# Now with SQL
-Discription(ru): https://docs.google.com/document/d/1dXwe7sJfb4XJdO8jrQ_2VTYmxtKMbeL4HijigSmZ5xU/edit?usp=sharing
+# A very poorly and strangely written bot system
+This is python-threading based sync bot system using SQLite.
+
+Abaddoned and needs remake.
+---
+Scripts and chat api's are separated. JSON config required.
+
+Available chat systems:
++ VK
++ CLI
+---
