@@ -255,7 +255,7 @@ class Chat(Thread):
     def input(self):
         pass
 
-    def message_parse(self):
+    def message_parse(self, value):
         pass
 
 
@@ -272,7 +272,29 @@ class Message(Thread):
     attachments = dict()  # photos, audios...
     sym = ''  # symbol before command
 
-    def __init__(self, _type, id, text, cls: Chat):
+    @classmethod
+    def from_text(cls, _type, id, text, chat):
+        parsed = chat.message_parse(text)
+        return cls(_type,
+                   id,
+                   chat,
+                   parsed['msg'],
+                   parsed['attachments'],
+                   parsed['date'],
+                   parsed['sendid'],
+                   parsed['userid']
+                   )
+
+    def __init__(self,
+                 _type,
+                 id,
+                 cls: Chat,
+                 msg,
+                 attachments,
+                 date,
+                 sendid,
+                 userid
+                 ):
         """
         Parsing text and making Message
         :param _type: Chat type
@@ -283,13 +305,12 @@ class Message(Thread):
         system: ChatSystem = cls.main_system
         session = system.db_session.create_session()
         Thread.__init__(self)
-        parsed = cls.message_parse(text)
-        self.wtype = parsed['type']
-        self.attachments = parsed['attachments']
-        self.msg = parsed['msg']
-        self.date = parsed['date']
-        self.sendid = parsed['sendid']
-        self.userid = parsed['userid']
+        self.wtype = _type
+        self.attachments = attachments
+        self.msg = msg
+        self.date = date
+        self.sendid = sendid
+        self.userid = userid
         self.user = session.query(
             system.db_session.User
         ).filter(

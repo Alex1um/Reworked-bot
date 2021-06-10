@@ -29,7 +29,7 @@ class VK(Chat):
             else:
                 for update in res['updates']:
                     if update['type'] == 'message_new':
-                        Message(  # creating message
+                        Message.from_text(  # creating message
                             'vk',
                             id,
                             update,
@@ -143,8 +143,8 @@ class VK(Chat):
                     print(res)
                     self.msg_id += 1
                     self.input(res, self.msg_id)
-            except Exception as f:
-                print(f)
+            except Exception as e:
+                raise e
 
     def message_parse(self, res):
         """
@@ -240,9 +240,10 @@ class VK(Chat):
                 'attachments': r_attachments,
                 'userid': r_userid}
 
-    def upload_doc(self, dir, from_id, type: "audio_message" or 'doc') -> str:
+    def upload_doc(self, dir, from_id, type) -> str:
         """
         Upload document
+        :type type: 'audio_message' or 'doc'
         :param dir: update from..
         :param from_id: user/chat id to upload file
         :param type: document type

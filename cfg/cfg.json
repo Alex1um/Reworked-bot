@@ -1,0 +1,30 @@
+{
+  "ChatSystem": [
+    {
+      "modules": {
+        "commands": [
+          "@all",
+          "!solve_math.py"
+        ]
+      },
+      "mode": "command",
+      "default_command_symbols": [
+        "!",
+        "test"
+      ],
+      "update_status": 1
+    }
+  ],
+  "Chats": {
+    "VK": [
+      {
+        "token": "token",
+        "_group_id": "group_id: int",
+        "v": "vk api version"
+      }
+    ],
+    "command_promt": [
+      {}
+    ]
+  }
+}
