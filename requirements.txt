@@ -1,9 +1,0 @@
-SQLAlchemy
-SpeechRecognition
-acrcloud
-beautifulsoup4
-gtts
-schedule
-pymorphy2
-vk
-wikipedia
